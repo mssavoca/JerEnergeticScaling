@@ -73,8 +73,7 @@ summary(TADL_gamm$gam)
 
 
 #Odontocente efficiency models
-
-Odont_eff_gamm <- odont_matrix %>% gamm(E_divesurf_max ~ M_kg, family=poisson(link='log'), random=list(Species=~1), data=.)
+#Odont_eff_gamm <- odont_matrix %>% gamm(E_divesurf_max ~ M_kg, family=poisson(link='log'), random=list(Species=~1), data=.)
 
 
 
