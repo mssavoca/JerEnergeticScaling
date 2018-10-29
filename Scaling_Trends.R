@@ -51,7 +51,7 @@ scaling_matrix <- left_join(scaling_matrix,as_tibble(select(scaling_matrix_summa
 p <- ggplot(scaling_matrix, aes (foraging_count_per_dive_min_median,Duration_min_max, colour = factor(taxa))) + geom_point(aes(colour = factor(taxa)),size = 1) + theme_minimal() + geom_smooth(method = "lm", formula = y~log(x))  + theme(legend.position="top")  + guides(color=guide_legend(override.aes=list(fill=NA))) #+ theme(legend.justification=c(1,0), legend.position=c(1,0))
 p 
 
-p <- ggplot(scaling_matrix, aes (Duration_min_max-TADL,foraging_count_max, colour = factor(taxa))) + geom_point(aes(colour = factor(taxa)),size = 1, alpha=0.5) + theme_minimal() + geom_smooth(method = "lm", formula = y~(x))  + theme(legend.position="top")  + guides(color=guide_legend(override.aes=list(fill=NA))) #+ theme(legend.justification=c(1,0), legend.position=c(1,0))
+p <- ggplot(scaling_matrix, aes (Duration_min_max-TADL.x,foraging_count_max, colour = factor(taxa))) + geom_point(aes(colour = factor(taxa)),size = 1, alpha=0.5) + theme_minimal() + geom_smooth(method = "lm", formula = y~(x))  + theme(legend.position="top")  + guides(color=guide_legend(override.aes=list(fill=NA))) #+ theme(legend.justification=c(1,0), legend.position=c(1,0))
 p 
 #color by species, shape by taxa
 p + geom_point(aes(colour = factor(Species), shape = factor(taxa)) ,size = 1) #+ scale_shape_manual("taxa",values=c("O"=16,"M"=3)) #+ scale_color_manual(values=c("red", "blue", "green")) #,"2005"=4
@@ -61,11 +61,12 @@ p + geom_point(aes(colour = factor(Species), shape = factor(taxa)) ,size = 1, al
 
 
 #Test whether slopes are significantly different between M & O
-TADL_O_gamm<- filter(scaling_matrix, taxa == "O") %>% gamm(foraging_count_max ~ Duration_min_max-TADL, random=list(Species=~1), data=.)
+TADL_O_gamm<- filter(scaling_matrix, taxa == "O") %>% gamm(foraging_count_max ~ (Duration_min_max-TADL), random=list(Species=~1), data=.)
+### $gam to look at gam effects. $lme to look at random effects.
 summary(TADL_O_gamm$gam)
 
-TADL_M_gamm<- filter(scaling_matrix, taxa == "M") %>% gamm(foraging_count_max ~ Duration_min_max-TADL, random=list(Species=~1), data=.)
-summary(TADL_O_gamm$gam)
+TADL_M_gamm<- filter(scaling_matrix, taxa == "M") %>% gamm(foraging_count_max ~ (Duration_min_max-TADL), random=list(Species=~1), data=.)
+summary(TADL_M_gamm$gam)
 
 TADL_gamm <- gamm(foraging_count_max ~ Duration_min_max-TADL + taxa, random=list(Species=~1), data=scaling_matrix)
 summary(TADL_gamm$gam)
