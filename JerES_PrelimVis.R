@@ -5,6 +5,7 @@
 # load packages
 library(dplyr)
 library(ggplot2)
+library(mgcv)
 #library(readxl)
 
 # load data
@@ -55,13 +56,14 @@ for(i in 1:(dim(d_full)[1])){
 d_strapped$Weighted_E_divesurf_max[d_strapped$Weighted_E_divesurf_max<0] <- 0
 d_strapped$Weighted_E_divesurf_med[d_strapped$Weighted_E_divesurf_med<0] <- 0
 
-
+# plotting the strapped data as a sanity check
 p1_logM__weighted_divesurf_max_strapped <- ggplot(d_strapped, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T, alpha = 0.3) +  
   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
   facet_grid(.~d_strapped$MR.exponent)
 
 p1_logM__weighted_divesurf_max_strapped
+
 
 Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.61") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
