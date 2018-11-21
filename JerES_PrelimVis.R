@@ -260,8 +260,11 @@ plot(Myst_Eff_dive_max_gamm$gam, col="blue", shade.col="grey", shade=F, select=2
 ## GGPLOT for GAM exploration - https://stackoverflow.com/questions/49471300/gam-plots-with-ggplot ##
 ## scale size of point by # diet
 ## https://mfasiolo.github.io/mgcViz/articles/mgcviz.html - explore other approach ##
+<<<<<<< HEAD
 ## For plotting in response - https://stats.stackexchange.com/questions/31502/plotting-gam-model-output-not-component-smooth-functions
 ## pull out pieces of a GAM for "fancy plot" - https://rforge.wordpress.com/2009/06/16/how2plot-nicer-gam-curves/
+=======
+>>>>>>> d5ea9ec94a4cbe3b78bd780f05c31bd4ee5ad438
 
 library(ISLR)
 library(mgcv)
