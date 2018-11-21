@@ -9,10 +9,14 @@ library(mgcv)
 library(readxl)
 
 # load data
-d_full <- read.csv("Odontoceti model output v9.5.csv")
+d_full <- read.csv("Cetacea model output v9.6.csv")
+#d_full <- read.csv("Odontoceti model output v9.5.csv")
 #d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
+
+# add group column
+d_full$Froup <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
 
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
