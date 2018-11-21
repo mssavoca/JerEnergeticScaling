@@ -16,7 +16,7 @@ d_full <- read.csv("Cetacea model output v9.6.csv")
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 # add group column
-d_full$Froup <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
+d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
 
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
@@ -137,7 +137,7 @@ summary(Eff_dive_max20_gamm$gam)
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
-  facet_grid(.~d_full$MR.exponent)
+  facet_grid(d_full$Group~d_full$MR.exponent, scales = "free")
 
 p1_logM__weighted_divesurf_max
 
