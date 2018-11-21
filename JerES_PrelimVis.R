@@ -170,7 +170,7 @@ summary(Eff_dive_max20_gamm$gam)
 ##################
 
 p1_logM_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = E_divesurf_max, color = Species)) +
-  geom_point(inherit.aes=T) +  
+  geom_point(aes(size =Percent)) +  
   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
   facet_grid(d_full$Group~d_full$MR.exponent, scales = "free") +
   theme_bw()
