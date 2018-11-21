@@ -6,11 +6,11 @@
 library(dplyr)
 library(ggplot2)
 library(mgcv)
-#library(readxl)
+library(readxl)
 
 # load data
-d_full <- read.csv("Odontoceti model output v9.4 fix.csv")
-#d_full <- read_excel("Odontoceti model output v9.4.xlsx", sheet = 1)
+d_full <- read.csv("Odontoceti model output v9.5.csv")
+#d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
@@ -64,6 +64,11 @@ p1_logM__weighted_divesurf_max_strapped <- ggplot(d_strapped, aes(x = log(M..kg.
 
 p1_logM__weighted_divesurf_max_strapped
 
+
+Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.45") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+### $gam to look at gam effects. $lme to look at random effects.
+summary(Eff_dive_max_gamm$gam)
+plot(Eff_dive_max_gamm$gam)
 
 Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.61") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
@@ -178,7 +183,7 @@ p1_TL_divesurf_med <- ggplot(d_full, aes(M..kg., E_divesurf_med, color = Species
 p1_TL_divesurf_med
 
 
-p1_TL_divesurf_max <- ggplot(d_full, aes(x = M..kg., y = log(E_divesurf_max), color = Species)) +
+p1_TL_divesurf_max <- ggplot(d_full, aes(x = M..kg., y = E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) + 
   facet_wrap(.~d_full$MR.exponent)  + 
   geom_smooth(aes(group = MR.exponent), inherit.aes = T, method = loess) 
