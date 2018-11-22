@@ -168,11 +168,21 @@ summary(Eff_dive_max20_gamm$gam)
 ##################
 # premliminary figures with weighted proportions of diet
 ##################
+# get silhouette images for figure
+imgOo <- png::readPNG("./Orcinus-orca.png")
+rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 
-p1_logM_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = E_divesurf_max, color = Species)) +
-  geom_point(aes(size =Percent)) +  
-  geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
-  facet_grid(d_full$Group~d_full$MR.exponent, scales = "free") +
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+                               aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
+  geom_point(aes(size =Percent), alpha = 0.3) +  
+  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
+  #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
+  #facet_grid(.~d_full$MR.exponent, scales = "free") +
+  annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
+  annotation_custom(rastBp, ymin = 300, ymax = 375, xmin = 8, xmax = 12.5) +
   theme_bw()
 
 p1_logM_divesurf_max
