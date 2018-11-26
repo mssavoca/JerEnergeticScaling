@@ -89,17 +89,17 @@ summary(Eff_dive_max_gamm$gam)
 
 ##EXPLORE Odont v. Myst GAMMs
 
-Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Odont_Eff_dive_max_gamm$gam)
 plot(Odont_Eff_dive_max_gamm$gam)
 
-Myst_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% filter(., Group=="Rorqual") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+Myst_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Rorqual") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Myst_Eff_dive_max_gamm$gam)
 plot((Myst_Eff_dive_max_gamm$gam))
 
-group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5)+Group, family=poisson(link='log'), random=list(Species=~1), data=.)
+group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5)+Group, family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(group_Eff_dive_max_gamm$gam)
 plot(group_Eff_dive_max_gamm$gam)
@@ -109,7 +109,7 @@ group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.61") %>% gamm(Wei
 summary(group_Eff_dive_max_gamm$gam)
 plot(group_Eff_dive_max_gamm$gam)
 
-group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5)+Group, family=poisson(link='log'), random=list(Species=~1), data=.)
+group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5)+Group, family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(group_Eff_dive_max_gamm$gam)
 plot(group_Eff_dive_max_gamm$gam)
@@ -183,7 +183,8 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68
   #facet_grid(.~d_full$MR.exponent, scales = "free") +
   annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
   annotation_custom(rastBp, ymin = 300, ymax = 375, xmin = 8, xmax = 12.5) +
-  theme_bw()
+  theme_bw() +
+  labs(x = "Log (Mass in kg)", y = "Energetic Efficiency (max)")
 
 p1_logM_divesurf_max
 
@@ -270,11 +271,8 @@ plot(Myst_Eff_dive_max_gamm$gam, col="blue", shade.col="grey", shade=F, select=2
 ## GGPLOT for GAM exploration - https://stackoverflow.com/questions/49471300/gam-plots-with-ggplot ##
 ## scale size of point by # diet
 ## https://mfasiolo.github.io/mgcViz/articles/mgcviz.html - explore other approach ##
-<<<<<<< HEAD
 ## For plotting in response - https://stats.stackexchange.com/questions/31502/plotting-gam-model-output-not-component-smooth-functions
 ## pull out pieces of a GAM for "fancy plot" - https://rforge.wordpress.com/2009/06/16/how2plot-nicer-gam-curves/
-=======
->>>>>>> d5ea9ec94a4cbe3b78bd780f05c31bd4ee5ad438
 
 library(ISLR)
 library(mgcv)
@@ -299,5 +297,40 @@ map(vars, function(x){
 }) %>%
 {grid.arrange(grobs = (.), ncol = 3, nrow = 2)}
 
+
+
+
+## predict GAM
+Myst_Eff_dive_max_gamm$gam
+Odont_Eff_dive_max_gamm$gam
+
+newdat <- data.frame(x0=seq(from=0, to=1, by=0.01))
+newdat <- data.frame(x0=seq(from=0, to=1, by=0.01))
+
+fits1 <- predict(gam1, newdata=newdat, type="response", se.fit=TRUE)
+lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)), col="red")
+lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)) + 1.96*fits1$se.fit, col="red")
+lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)) – 1.96*fits1$se.fit, col="red")
+
+# get silhouette images for figure with gam curves
+imgOo <- png::readPNG("./Orcinus-orca.png")
+rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+                               aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
+  geom_point(aes(size =Percent), alpha = 0.3) +  
+  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
+  #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
+  #facet_grid(.~d_full$MR.exponent, scales = "free") +
+  annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
+  annotation_custom(rastBp, ymin = 300, ymax = 375, xmin = 8, xmax = 12.5) +
+  theme_bw() +
+  labs(x = "Log (Mass in kg)", y = "Energetic Efficiency (max)")
+
+
+p1_logM_divesurf_max
 
 
