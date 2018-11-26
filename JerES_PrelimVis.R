@@ -177,8 +177,8 @@ rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
-  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
-  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
+  geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
+  geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
   #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
   #facet_grid(.~d_full$MR.exponent, scales = "free") +
   annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
