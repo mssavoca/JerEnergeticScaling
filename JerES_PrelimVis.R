@@ -7,6 +7,7 @@ library(dplyr)
 library(ggplot2)
 library(mgcv)
 library(readxl)
+library(png)
 
 # load data
 d_full <- read.csv("Cetacea model output v9.7.csv")
