@@ -177,8 +177,8 @@ rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
-  geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
-  geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
+  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
   #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
   #facet_grid(.~d_full$MR.exponent, scales = "free") +
   annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
@@ -304,15 +304,41 @@ map(vars, function(x){
 Myst_Eff_dive_max_gamm$gam
 Odont_Eff_dive_max_gamm$gam
 
-newdat <- data.frame(x0=seq(from=0, to=1, by=0.01))
-newdat <- data.frame(x0=seq(from=0, to=1, by=0.01))
+newmass <- data.frame(M..kg.=seq(from=0, to=max(d_strapped$M..kg.), by=50))
+newprey <- data.frame(Prey.W..g.=seq(from=0, to=max(d_strapped$Prey.W..g.), by=1000))
+newmass$Prey.W..g. <- mean(d_strapped$Prey.W..g.)
+newprey$M..kg. <- mean(d_strapped$M..kg.)
 
-fits1 <- predict(gam1, newdata=newdat, type="response", se.fit=TRUE)
-lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)), col="red")
-lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)) + 1.96*fits1$se.fit, col="red")
-lines(newdat$x0, fits1$fit-mean(predict(gam1, newdata=dat)) – 1.96*fits1$se.fit, col="red")
+fitsmass <- predict(gam1, newdata=newdat, type="response", se.fit=TRUE)
+M_fitsprey <- predict(Myst_Eff_dive_max_gamm$gam, newdata=newprey, type="response", se.fit=TRUE)
+M_fitsmass <- predict(Myst_Eff_dive_max_gamm$gam, newdata=newmass, type="response", se.fit=TRUE)
+O_fitsprey <- predict(Odont_Eff_dive_max_gamm$gam, newdata=newprey, type="response", se.fit=TRUE)
+O_fitsmass <- predict(Odont_Eff_dive_max_gamm$gam, newdata=newmass, type="response", se.fit=TRUE)
 
-# get silhouette images for figure with gam curves
+plot(Myst_Eff_dive_max_gamm$gam, select=2)
+lines(newprey$Prey.W..g., M_fitsprey$fit-mean(predict(Myst_Eff_dive_max_gamm$gam, newdata=d_strapped)), col="red")
+
+summary(M_fitsprey$fit)
+summary(M_fitsmass$fit)
+
+M_predictprey<-cbind(newprey, M_fitsprey$fit)
+O_predictprey<-cbind(newprey, O_fitsprey$fit)
+M_predictprey$Group="Rorqual"
+O_predictprey$Group="Odontocete"
+
+names(M_predictprey)[3]<-"E_divesurf_max"
+names(O_predictprey)[3]<-"E_divesurf_max"
+
+M_predictmass<-cbind(newmass, M_fitsmass$fit)
+O_predictmass<-cbind(newmass, O_fitsmass$fit)
+M_predictmass$Group="Rorqual"
+O_predictmass$Group="Odontocete"
+
+names(M_predictmass)[3]<-"E_divesurf_max"
+names(O_predictmass)[3]<-"E_divesurf_max"
+
+
+# get silhouette images for figure with gam curves - this needs more work!!!
 imgOo <- png::readPNG("./Orcinus-orca.png")
 rastOo <- grid::rasterGrob(imgOo, interpolate = T)
 imgBp <- png::readPNG("./Balaenoptera-physalus.png")
@@ -321,10 +347,12 @@ rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
-  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
-  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
-  #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
-  #facet_grid(.~d_full$MR.exponent, scales = "free") +
+#  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+#  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
+  geom_smooth(data = (M_predictmass)) +
+  geom_smooth(data = (O_predictmass)) +
+  
+  
   annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
   annotation_custom(rastBp, ymin = 300, ymax = 375, xmin = 8, xmax = 12.5) +
   theme_bw() +
