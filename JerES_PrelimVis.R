@@ -198,8 +198,8 @@ p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_
   facet_wrap(.~Group, scales = "free_x") +
   #geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
   #geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
-  annotation_custom(rastOo, ymin = -2, ymax = -0.5, xmin = 3.5, xmax = 5.5) +
-  annotation_custom(rastBp, ymin = -2, ymax = -0.5, xmin = 10.25, xmax = 11.5) +
+  annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
+  annotation_custom(rastBp, ymin = -1, ymax = 0.5, xmin = 10.25, xmax = 11.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) +
   labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
 
