@@ -10,7 +10,7 @@ library(readxl)
 library(png)
 
 # load data
-d_full <- read.csv("Cetacea model output v9.7.csv")
+d_full <- read.csv("Cetacea model output v9.8.csv")
 #d_full <- read.csv("Odontoceti model output v9.5.csv")
 #d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
