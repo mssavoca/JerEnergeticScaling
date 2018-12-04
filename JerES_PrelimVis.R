@@ -10,6 +10,7 @@ library(readxl)
 
 # load data
 d_full <- read.csv("Odontoceti model output v9.5.csv")
+data_full <- read.csv("Cetacea model output v9.6.csv")
 #d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
