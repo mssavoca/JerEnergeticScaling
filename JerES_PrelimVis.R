@@ -9,8 +9,8 @@ library(mgcv)
 library(readxl)
 
 # load data
-#d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
@@ -18,14 +18,12 @@ d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 # add group column
-#d_full$Group <- ifelse(d_full$Family == "Balaenopteridae" | "Fossil", "Rorqual", "Odontocete")
+d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
 
-d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
-d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
+# Makes the group when fossil species are included in NULL_ALL_ENP
+#d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
+#d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
 
-d_full <- read.csv("Odontoceti model output v9.5.csv")
-data_full <- read.csv("Cetacea model output v9.6.csv")
-#d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
@@ -204,7 +202,7 @@ d_obs <- filter(d_full, MR.exponent == "0.68" & Species != "huge")
 p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = Percent), alpha = 0.3) +  
   geom_smooth(mapping = aes(weight = Percent), method = lm) +
-  facet_wrap(.~Group, scales = "free_x") +
+  #facet_wrap(.~Group, scales = "free_x") +
   #geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
   #geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
   annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
