@@ -9,7 +9,6 @@ library(mgcv)
 library(readxl)
 
 # load data
-<<<<<<< HEAD
 d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
@@ -24,14 +23,12 @@ d_full$MR.exponent = as.factor(d_full$MR.exponent)
 d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
 d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
 
-=======
 d_full <- read.csv("Odontoceti model output v9.5.csv")
 data_full <- read.csv("Cetacea model output v9.6.csv")
 #d_full <- read_excel("Odontoceti model output v9.5.xlsx")
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
->>>>>>> 636172f47c2a71d93fc9b562bf727f03f06e08be
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
 d_full$Weighted_E_divesurf_med <- d_full$Percent*d_full$E_divesurf_med  #creates a column for E_divesurf_med that is weighted by Percent diet
@@ -101,7 +98,6 @@ Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Eff_dive_max_gamm$gam)
 
-<<<<<<< HEAD
 ##EXPLORE Odont v. Myst GAMMs
 Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
@@ -136,8 +132,6 @@ plot(group_Eff_dive_max_gamm$gam)
 
 
 #### MORE EXPLORATION CRAP
-=======
->>>>>>> 636172f47c2a71d93fc9b562bf727f03f06e08be
 
 Eff_dive_med_gamm<- filter(d_strapped, MR.exponent == "0.61") %>% gamm(Weighted_E_divesurf_med ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
@@ -184,7 +178,6 @@ summary(Eff_dive_max20_gamm$gam)
 ##################
 # premliminary figures with weighted proportions of diet
 ##################
-<<<<<<< HEAD
 # get silhouette images for figure
 imgOo <- png::readPNG("./Orcinus-orca.png")
 rastOo <- grid::rasterGrob(imgOo, interpolate = T)
@@ -220,9 +213,6 @@ p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_
   labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
 
 p1_logM_divesurf_max_obs
-
-=======
->>>>>>> 636172f47c2a71d93fc9b562bf727f03f06e08be
 
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
