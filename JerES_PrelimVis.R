@@ -11,15 +11,18 @@ library(png)
 
 # load data
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
-d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
+d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 # add group column
-d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
+#d_full$Group <- ifelse(d_full$Family == "Balaenopteridae" | "Fossil", "Rorqual", "Odontocete")
+
+d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
+d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
 
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
@@ -91,7 +94,6 @@ Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_
 summary(Eff_dive_max_gamm$gam)
 
 ##EXPLORE Odont v. Myst GAMMs
-
 Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Odont_Eff_dive_max_gamm$gam)
@@ -192,10 +194,10 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68
 p1_logM_divesurf_max
 
 # plot removing the hypothetically huge blue whale
-d_obs <- filter(d_full, Species != "huge" & MR.exponent == "0.68")
+d_obs <- filter(d_full, MR.exponent == "0.68" & Species != "huge")
 
 p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
-  geom_point(aes(size =Percent), alpha = 0.3) +  
+  geom_point(aes(size = Percent), alpha = 0.3) +  
   geom_smooth(mapping = aes(weight = Percent), method = lm) +
   facet_wrap(.~Group, scales = "free_x") +
   #geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
