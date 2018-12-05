@@ -10,8 +10,8 @@ library(readxl)
 library(png)
 
 # load data
-#d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
