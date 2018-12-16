@@ -9,9 +9,9 @@ library(mgcv)
 library(readxl)
 
 # load data
-d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
-#d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
+d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
 
@@ -182,7 +182,7 @@ rastOo <- grid::rasterGrob(imgOo, interpolate = T)
 imgBp <- png::readPNG("./Balaenoptera-physalus.png")
 rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 
-p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.45"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
   geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
@@ -197,7 +197,7 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68
 p1_logM_divesurf_max
 
 # plot removing the hypothetically huge blue whale
-d_obs <- filter(d_full, MR.exponent == "0.68" & Species != "huge")
+d_obs <- filter(d_full, MR.exponent == "0.45") #& Species != "huge")
 
 p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = Percent), alpha = 0.3) +  
