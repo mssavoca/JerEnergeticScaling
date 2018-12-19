@@ -6,6 +6,7 @@ library(mgcv)
 scaling_matrix <- read_excel("foragestats_combined_ko.xlsx", sheet = 1)
 scaling_matrix_summary <- read_excel("foragestats_combined_ko.xlsx", sheet = 2)
 odont_matrix <- read_excel("Odontoceti model output v9.4.xlsx", sheet = 1)
+cet_matrix <- read_excel("Cetacea model output v9.6.xlsx", sheet = 1)
 
 #dive depth vs. body size
 p <- ggplot(scaling_matrix, aes (Body_mass_kg,Depth_m_max))

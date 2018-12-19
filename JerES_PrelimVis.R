@@ -9,14 +9,23 @@ library(mgcv)
 library(readxl)
 
 # load data
-d_full <- read.csv("Cetacea model output v9.7.csv")
-#d_full <- read.csv("Odontoceti model output v9.5.csv")
-#d_full <- read_excel("Odontoceti model output v9.5.xlsx")
+d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
+
+#d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 # add group column
 d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
+
+# Makes the group when fossil species are included in NULL_ALL_ENP
+#d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
+#d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
+
+
+d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
@@ -88,7 +97,6 @@ Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_
 summary(Eff_dive_max_gamm$gam)
 
 ##EXPLORE Odont v. Myst GAMMs
-
 Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Odont_Eff_dive_max_gamm$gam)
@@ -174,7 +182,7 @@ rastOo <- grid::rasterGrob(imgOo, interpolate = T)
 imgBp <- png::readPNG("./Balaenoptera-physalus.png")
 rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 
-p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.45"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
   geom_smooth(data = filter(d_full, Group == "Rorqual")) +
@@ -188,11 +196,26 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68
 
 p1_logM_divesurf_max
 
+# plot removing the hypothetically huge blue whale
+d_obs <- filter(d_full, MR.exponent == "0.45") #& Species != "huge")
+
+p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
+  geom_point(aes(size = Percent), alpha = 0.3) +  
+  geom_smooth(mapping = aes(weight = Percent), method = lm) +
+  #facet_wrap(.~Group, scales = "free_x") +
+  #geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
+  #geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
+  annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
+  annotation_custom(rastBp, ymin = -1, ymax = 0.5, xmin = 10.25, xmax = 11.5) +
+  theme_bw() + guides(size=FALSE, color=FALSE) +
+  labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
+
+p1_logM_divesurf_max_obs
 
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
-  facet_grid(d_full$Group~d_full$MR.exponent, scales = "free")
+  facet_grid(.~d_full$MR.exponent)
 
 p1_logM__weighted_divesurf_max
 
@@ -248,6 +271,7 @@ p1_TL_divesurf_max <- ggplot(d_full, aes(x = M..kg., y = E_divesurf_max, color =
   geom_smooth(aes(group = MR.exponent), inherit.aes = T, method = loess) 
 
 p1_TL_divesurf_max
+
 
 
 
