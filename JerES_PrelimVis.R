@@ -179,11 +179,11 @@ rastOo <- grid::rasterGrob(imgOo, interpolate = T)
 imgBp <- png::readPNG("./Balaenoptera-physalus.png")
 rastBp <- grid::rasterGrob(imgBp, interpolate = T)
 
-p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.45"),
                                aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
   geom_point(aes(size =Percent), alpha = 0.3) +  
-  geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
-  geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
+  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
   #geom_smooth(aes(group = MR.exponent), color = "black", method = loess) +
   #facet_grid(.~d_full$MR.exponent, scales = "free") +
   annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
@@ -194,7 +194,7 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68
 p1_logM_divesurf_max
 
 # plot removing the hypothetically huge blue whale
-d_obs <- filter(d_full, MR.exponent == "0.68" & Species != "huge")
+d_obs <- filter(d_full, MR.exponent == "0.45") #& Species != "huge")
 
 p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = Percent), alpha = 0.3) +  
@@ -275,5 +275,116 @@ p1_TL_divesurf_max <- ggplot(d_full, aes(x = M..kg., y = E_divesurf_max, color =
 p1_TL_divesurf_max
 
 
+
+
+## POTENTIAL FIGS
+par(mfrow=c(2,2))
+plot(Odont_Eff_dive_max_gamm$gam, shade=T)
+plot(Myst_Eff_dive_max_gamm$gam, shade=T)
+
+plot(Odont_Eff_dive_max_gamm$gam, col="red", shade.col="grey", shade=F, residuals=TRUE,select=1, xlab="", ylab="", xlim=c(0,250000), ylim=c(-2,2)) #residuals=TRUE,
+par(new=T)
+plot(Myst_Eff_dive_max_gamm$gam, col="blue", shade.col="grey", shade=F, residuals=TRUE,select=1, xlim=c(0,250000), ylim=c(-2,2)) #residuals=TRUE,
+
+plot(Odont_Eff_dive_max_gamm$gam, col="red", shade.col="grey", shade=F, select=2, xlab="", ylab="", xlim=c(0,250000), ylim=c(-2,2)) #residuals=TRUE,
+par(new=T)
+plot(Myst_Eff_dive_max_gamm$gam, col="blue", shade.col="grey", shade=F, select=2, xlim=c(0,250000), ylim=c(-2,2)) #residuals=TRUE,
+
+
+
+
+
+## GGPLOT for GAM exploration - https://stackoverflow.com/questions/49471300/gam-plots-with-ggplot ##
+## scale size of point by # diet
+## https://mfasiolo.github.io/mgcViz/articles/mgcviz.html - explore other approach ##
+## For plotting in response - https://stats.stackexchange.com/questions/31502/plotting-gam-model-output-not-component-smooth-functions
+## pull out pieces of a GAM for "fancy plot" - https://rforge.wordpress.com/2009/06/16/how2plot-nicer-gam-curves/
+
+library(ISLR)
+library(mgcv)
+library(voxel)
+library(tidyverse)
+library(gridExtra)
+#data(College)
+
+map(vars, function(x){
+  p <- plotGAM(group_Eff_dive_max_gamm$gam, smooth.cov = x) #plot customization goes here
+  g <- ggplotGrob(p)
+}) %>%
+{grid.arrange(grobs = (.), ncol = 2, nrow = 3)}
+
+map(vars, function(x){
+  p <- plotGAM(group_Eff_dive_max_gamm$gam, smooth.cov = x, groupCovs = "Group") +
+    geom_point(data = filter(d_strapped, MR.exponent == "0.75"), aes_string(y = "Weighted_E_divesurf_med", x = x, color= "Group"), alpha = 0.2) +
+    geom_rug(data = filter(d_strapped, MR.exponent == "0.75"), aes_string(y = "Weighted_E_divesurf_med", x = x, color= "Group"  ), alpha = 0.2) +
+    scale_color_manual("Group", values = c("#868686FF", "#0073C2FF")) +
+    theme(legend.position="none")
+  g <- ggplotGrob(p)
+}) %>%
+{grid.arrange(grobs = (.), ncol = 3, nrow = 2)}
+
+
+
+
+## predict GAM
+Myst_Eff_dive_max_gamm$gam
+Odont_Eff_dive_max_gamm$gam
+
+newmass <- data.frame(M..kg.=seq(from=0, to=max(d_strapped$M..kg.), by=50))
+newprey <- data.frame(Prey.W..g.=seq(from=0, to=max(d_strapped$Prey.W..g.), by=1000))
+newmass$Prey.W..g. <- mean(d_strapped$Prey.W..g.)
+newprey$M..kg. <- mean(d_strapped$M..kg.)
+
+fitsmass <- predict(gam1, newdata=newdat, type="response", se.fit=TRUE)
+M_fitsprey <- predict(Myst_Eff_dive_max_gamm$gam, newdata=newprey, type="response", se.fit=TRUE)
+M_fitsmass <- predict(Myst_Eff_dive_max_gamm$gam, newdata=newmass, type="response", se.fit=TRUE)
+O_fitsprey <- predict(Odont_Eff_dive_max_gamm$gam, newdata=newprey, type="response", se.fit=TRUE)
+O_fitsmass <- predict(Odont_Eff_dive_max_gamm$gam, newdata=newmass, type="response", se.fit=TRUE)
+
+plot(Myst_Eff_dive_max_gamm$gam, select=2)
+lines(newprey$Prey.W..g., M_fitsprey$fit-mean(predict(Myst_Eff_dive_max_gamm$gam, newdata=d_strapped)), col="red")
+
+summary(M_fitsprey$fit)
+summary(M_fitsmass$fit)
+
+M_predictprey<-cbind(newprey, M_fitsprey$fit)
+O_predictprey<-cbind(newprey, O_fitsprey$fit)
+M_predictprey$Group="Rorqual"
+O_predictprey$Group="Odontocete"
+
+names(M_predictprey)[3]<-"E_divesurf_max"
+names(O_predictprey)[3]<-"E_divesurf_max"
+
+M_predictmass<-cbind(newmass, M_fitsmass$fit)
+O_predictmass<-cbind(newmass, O_fitsmass$fit)
+M_predictmass$Group="Rorqual"
+O_predictmass$Group="Odontocete"
+
+names(M_predictmass)[3]<-"E_divesurf_max"
+names(O_predictmass)[3]<-"E_divesurf_max"
+
+
+# get silhouette images for figure with gam curves - this needs more work!!!
+imgOo <- png::readPNG("./Orcinus-orca.png")
+rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+
+p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.68"),
+                               aes(x = log(M..kg.), y = E_divesurf_max, color = Group)) +
+  geom_point(aes(size =Percent), alpha = 0.3) +  
+#  geom_smooth(data = filter(d_full, Group == "Rorqual")) +
+#  geom_smooth(data = filter(d_full, Group == "Odontocete")) +
+  geom_smooth(data = (M_predictmass)) +
+  geom_smooth(data = (O_predictmass)) +
+  
+  
+  annotation_custom(rastOo, ymin = 200, ymax = 275, xmin = -1) +
+  annotation_custom(rastBp, ymin = 300, ymax = 375, xmin = 8, xmax = 12.5) +
+  theme_bw() +
+  labs(x = "Log (Mass in kg)", y = "Energetic Efficiency (max)")
+
+
+p1_logM_divesurf_max
 
 
