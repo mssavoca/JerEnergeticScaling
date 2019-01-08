@@ -9,8 +9,8 @@ library(mgcv)
 library(readxl)
 
 # load data
-d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
@@ -23,9 +23,6 @@ d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocet
 # Makes the group when fossil species are included in NULL_ALL_ENP
 #d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
 #d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
-
-
-d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
@@ -211,6 +208,11 @@ p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_
   labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
 
 p1_logM_divesurf_max_obs
+
+# code to extract values for each model, needed for Jeremy's paper, change filter as necessary
+d_model <- filter(d_full, Species != "huge" & Group == "Rorqual" & MR.exponent == "0.75")  #        
+model <- lm((log(E_divesurf_max)~log(M..kg.)), weights = Percent, data = d_model)
+summary(model)
 
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
