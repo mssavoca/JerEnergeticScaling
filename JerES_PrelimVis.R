@@ -194,14 +194,14 @@ p1_logM_divesurf_max <- ggplot(data = filter(d_full, d_full$MR.exponent == "0.45
 p1_logM_divesurf_max
 
 # plot removing the hypothetically huge blue whale
-d_obs <- filter(d_full, MR.exponent == "0.45") #& Species != "huge")
+d_obs <- filter(d_full, MR.exponent == "0.68") #& Species != "huge")
 
-p1_logM_divesurf_max_obs <- ggplot(data = d_obs, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
-  geom_point(aes(size = Percent), alpha = 0.3) +  
-  geom_smooth(mapping = aes(weight = Percent), method = lm) +
-  #facet_wrap(.~Group, scales = "free_x") +
-  #geom_smooth(data = filter(d_full, Group == "Rorqual"), mapping = aes(weight = Percent)) +
-  #geom_smooth(data = filter(d_full, Group == "Odontocete"), mapping = aes(weight = Percent)) +
+p1_logM_divesurf_max_obs <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
+  geom_point(aes(size = Percent, group = MR.exponent), alpha = 0.3) +  
+  geom_smooth(data = filter(d_full, MR.exponent == 0.45), aes(weight = Percent, group = Group), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group), method = lm) +  
   annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
   annotation_custom(rastBp, ymin = -1, ymax = 0.5, xmin = 10.25, xmax = 11.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) +
