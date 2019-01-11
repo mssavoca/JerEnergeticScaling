@@ -12,12 +12,25 @@ library(readxl)
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
+d_ind <- read.csv("Stats by individual.csv")
+
 d_sp <- read.csv("Stats by species.csv")
+
 fig_4_data <- read.csv("Figure 4 data.csv")
   fig_4_data$MR <- as.factor(fig_4_data$MR)
   fig_4_data$Calc.MR <- as.factor(fig_4_data$Calc.MR)
 
-
+############
+# Figure 2A
+############
+fig_2a <- ggplot(d_ind, aes(DT_max.TADL.25, FE_max, color = Group, shape = Group)) + # Change color from Group to Grouping for different plot types
+    geom_point() + 
+    geom_smooth(aes(group = Group), method = lm, se = FALSE) +       # Change group from Group to Grouping for different plot types
+    theme_bw() + guides(size=FALSE, color=FALSE) +
+    labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive")
+fig_2a
+  
+  
 ############
 # Figure 2B
 ############
