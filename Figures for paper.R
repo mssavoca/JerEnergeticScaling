@@ -22,10 +22,11 @@ fig_2b <- ggplot(d_sp, aes())
 
 # Figure 2C
 
-fig_2c <- ggplot(d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
+fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
   geom_point() +
-  geom_smooth(data = filter(d_sp, Group == "Rorqual")) +
+  geom_smooth(data = filter(d_sp, Group == "Rorqual"), method = lm, se = FALSE) +
+  geom_smooth(data = filter(d_sp, Group == "Odontocete"), method = lm, se = FALSE) +  
   theme_bw() + guides(size=FALSE, color=FALSE) +
-  #labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]")
+  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]")
 fig_2c
 
