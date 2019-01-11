@@ -13,7 +13,9 @@ d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 d_sp <- read.csv("Stats by species.csv")
-
+fig_4_data <- read.csv("Figure 4 data.csv")
+  fig_4_data$MR <- as.factor(fig_4_data$MR)
+  fig_4_data$Calc.MR <- as.factor(fig_4_data$Calc.MR)
 
 
 ############
@@ -37,4 +39,36 @@ fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)
   theme_bw() + guides(size=FALSE, color=FALSE) +
   labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]")
 fig_2c
+
+
+##########
+# Figure 3
+##########
+# get silhouette images for figure
+imgOo <- png::readPNG("./Orcinus-orca.png")
+rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
+  geom_point(aes(size = Percent, group = MR.exponent), alpha = 0.3) +  
+  geom_smooth(data = filter(d_full, MR.exponent == 0.45), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +  
+  annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
+  annotation_custom(rastBp, ymin = -1, ymax = 0.5, xmin = 10.25, xmax = 11.5) +
+  theme_bw() + guides(size=FALSE, color=FALSE) +
+  labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
+fig_3
+
+
+###########
+# Figure 4
+###########
+fig_4 <- ggplot(data = filter(fig_4_data, Group == "Rorqual"), aes(logMC, log.of.MR, color = MR)) +
+  geom_point(aes(group=log.of.MR)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "log [Body mass (kg)]", y = "log[Energetic efficiency]")
+fig_4
 
