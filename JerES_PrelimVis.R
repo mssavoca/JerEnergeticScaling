@@ -214,6 +214,8 @@ d_model <- filter(d_full, Species != "huge" & Group == "Rorqual" & MR.exponent =
 model <- lm((log(E_divesurf_max)~log(M..kg.)), weights = Percent, data = d_model)
 summary(model)
 
+
+
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +

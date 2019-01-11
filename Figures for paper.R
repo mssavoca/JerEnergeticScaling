@@ -23,12 +23,23 @@ fig_4_data <- read.csv("Figure 4 data.csv")
 ############
 # Figure 2A
 ############
-fig_2a <- ggplot(d_ind, aes(DT_max.TADL.25, FE_max, color = Group, shape = Group)) + # Change color from Group to Grouping for different plot types
+fig_2a <- ggplot(d_ind, aes(DT_max.TADL.25, FE_max, color = Grouping, shape = Grouping)) + # Change color from Group to Grouping for different plot types
     geom_point() + 
-    geom_smooth(aes(group = Group), method = lm, se = FALSE) +       # Change group from Group to Grouping for different plot types
+    geom_smooth(aes(group = Grouping), method = lm, se = TRUE) +       # Change group from Group to Grouping for different plot types
+    # single line
     theme_bw() + guides(size=FALSE, color=FALSE) +
     labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive")
-fig_2a
+fig_2a 
+  
+  
+  # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
+  annotate("text", x = 10:10, y = 20:25, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
+
+
+("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
+
+y = 0.2204x1.2438 R² = 0.3387
+
   
   
 ############
