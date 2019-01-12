@@ -11,6 +11,11 @@ library(readxl)
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
+  d_full$MR.exponent = as.factor(d_full$MR.exponent)
+  d_full$M..kg. <- as.numeric(d_full$M..kg.)
+  d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
+  d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
+                         ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
 
 d_ind <- read.csv("Stats by individual.csv")
 
