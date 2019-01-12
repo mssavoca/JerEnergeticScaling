@@ -78,15 +78,19 @@ imgOo <- png::readPNG("./Orcinus-orca.png")
 rastOo <- grid::rasterGrob(imgOo, interpolate = T)
 imgBp <- png::readPNG("./Balaenoptera-physalus.png")
 rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+imgBm <- png::readPNG("./Balaena-mysticetus.png")
+rastBm <- grid::rasterGrob(imgBm, interpolate = T)
+
 fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
-  geom_point(aes(size = Percent, group = MR.exponent), alpha = 0.3) +  
+  geom_point(aes(size = (Percent)*10, group = MR.exponent), alpha = 0.3) +  
   geom_smooth(data = filter(d_full, MR.exponent == 0.45), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +  
   annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
-  annotation_custom(rastBp, ymin = -1, ymax = 0.5, xmin = 10.25, xmax = 11.5) +
-  theme_bw() + guides(size=FALSE, color=FALSE) +
+  annotation_custom(rastBp, ymin = 5, ymax = 6.5, xmin = 7, xmax = 10) +
+  annotation_custom(rastBm, ymin = -2, ymax = -1, xmin = 10, xmax = 12.5) +
+  theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-5,8) + xlim(2.75,12.75)
   labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
 fig_3
 
@@ -105,6 +109,9 @@ fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Gro
   geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid") +
   geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
   geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
+  annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 1.75, xmax = 2.75) +
+  annotation_custom(rastBp, ymin = 1.5, ymax = 1.75, xmin = 2.5, xmax = 4) +
+  annotation_custom(rastBm, ymin = 0, ymax = 0.5, xmin = 4.55, xmax = 5.75) +
   theme_bw() +
   labs(x = "log [Body mass (kg)]", y = "log[Energetic efficiency]")
 fig_4
