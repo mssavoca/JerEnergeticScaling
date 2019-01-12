@@ -9,8 +9,13 @@ library(mgcv)
 library(readxl)
 
 # load data
+<<<<<<< HEAD
+d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+=======
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+>>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
@@ -24,6 +29,16 @@ d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocet
 #d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
 #d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
 
+<<<<<<< HEAD
+#d_full <- read.csv("Odontoceti model output v9.5.csv")
+#data_full <- read.csv("Cetacea model output v9.6.csv")
+#d_full <- read_excel("Odontoceti model output v9.5.xlsx")
+
+d_full$MR.exponent = as.factor(d_full$MR.exponent)
+
+
+=======
+>>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
 d_full$Weighted_E_divesurf_med <- d_full$Percent*d_full$E_divesurf_med  #creates a column for E_divesurf_med that is weighted by Percent diet
@@ -66,13 +81,16 @@ for(i in 1:(dim(d_full)[1])){
 d_strapped$Weighted_E_divesurf_max[d_strapped$Weighted_E_divesurf_max<0] <- 0
 d_strapped$Weighted_E_divesurf_med[d_strapped$Weighted_E_divesurf_med<0] <- 0
 
-# plotting the strapped data as a sanity check
-p1_logM__weighted_divesurf_max_strapped <- ggplot(d_strapped, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
-  geom_point(inherit.aes=T, alpha = 0.3) +  
-  geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
-  facet_grid(.~d_strapped$MR.exponent)
+saveRDS(d_strapped, file="d_strapped_12042018.RDS")
+d_strapped <- readRDS(file="d_strapped_12042018.RDS")
 
-p1_logM__weighted_divesurf_max_strapped
+# plotting the strapped data as a sanity check
+# p1_logM__weighted_divesurf_max_strapped <- ggplot(d_strapped, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
+#   geom_point(inherit.aes=T, alpha = 0.3) +  
+#   geom_smooth(aes(group = MR.exponent), color = "black", inherit.aes = T, method = loess) +
+#   facet_grid(.~d_strapped$MR.exponent)
+# 
+# p1_logM__weighted_divesurf_max_strapped
 
 
 Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.45") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
@@ -174,6 +192,10 @@ summary(Eff_dive_max20_gamm$gam)
 ##################
 # premliminary figures with weighted proportions of diet
 ##################
+<<<<<<< HEAD
+
+=======
+>>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 # get silhouette images for figure
 imgOo <- png::readPNG("./Orcinus-orca.png")
 rastOo <- grid::rasterGrob(imgOo, interpolate = T)
@@ -210,12 +232,15 @@ p1_logM_divesurf_max_obs <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E
 
 p1_logM_divesurf_max_obs
 
+<<<<<<< HEAD
+=======
 # code to extract values for each model, needed for Jeremy's paper, change filter as necessary
 d_model <- filter(d_full, Species != "huge" & Group == "Rorqual" & MR.exponent == "0.75")  #        
 model <- lm((log(E_divesurf_max)~log(M..kg.)), weights = Percent, data = d_model)
 summary(model)
 
 
+>>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 
 p1_logM__weighted_divesurf_max <- ggplot(d_full, aes(x = log(M..kg.), y = Weighted_E_divesurf_max, color = Species)) +
   geom_point(inherit.aes=T) +  
