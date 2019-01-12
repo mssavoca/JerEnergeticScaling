@@ -89,9 +89,17 @@ fig_3
 ###########
 # Figure 4
 ###########
-fig_4 <- ggplot(data = filter(fig_4_data, Group == "Rorqual"), aes(logMC, log.of.MR, color = MR)) +
-  geom_point(aes(group=log.of.MR)) +
-  geom_line() +
+fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR)) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR)) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR)) +
+  geom_point(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value, group=log.of.MR)) +
+  geom_point(data = filter(fig_4_data, Group == "Balaenid"), aes(group=log.of.MR)) +
+  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dashed") +
+  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dashed") +
+  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid") +
+  geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
+  geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
   theme_bw() +
   labs(x = "log [Body mass (kg)]", y = "log[Energetic efficiency]")
 fig_4
