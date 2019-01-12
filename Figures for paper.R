@@ -5,6 +5,7 @@
 # load packages
 library(dplyr)
 library(ggplot2)
+library(ggsci)
 library(readxl)
 
 # load data
@@ -90,9 +91,9 @@ fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), col
   annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
   annotation_custom(rastBp, ymin = 5, ymax = 6.5, xmin = 7, xmax = 10) +
   annotation_custom(rastBm, ymin = -2, ymax = -1, xmin = 10, xmax = 12.5) +
-  theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-5,8) + xlim(2.75,12.75)
+  theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-5,8) + xlim(2.75,12.75) +
   labs(x = "Log (Mass [kg])", y = "Log (Energetic Efficiency [max])")
-fig_3
+fig_3 + scale_color_npg()
 
 
 ###########
@@ -114,5 +115,5 @@ fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Gro
   annotation_custom(rastBm, ymin = 0, ymax = 0.5, xmin = 4.55, xmax = 5.75) +
   theme_bw() +
   labs(x = "log [Body mass (kg)]", y = "log[Energetic efficiency]")
-fig_4
+fig_4 + scale_color_npg()
 
