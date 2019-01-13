@@ -1,0 +1,22 @@
+
+Family: poisson 
+Link function: log 
+
+Formula:
+Weighted_E_divesurf_max ~ s(M..kg., k = 5) + s(Prey.W..g., k = 5)
+
+Parametric coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   3.6400     0.2158   16.86   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Approximate significance of smooth terms:
+                edf Ref.df        F p-value    
+s(M..kg.)     1.000  1.000    3.759  0.0526 .  
+s(Prey.W..g.) 3.998  3.998 2820.462  <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+R-sq.(adj) =  0.0408   
+  Scale est. = 1         n = 10200

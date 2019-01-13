@@ -9,36 +9,25 @@ library(mgcv)
 library(readxl)
 
 # load data
-<<<<<<< HEAD
-d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
-=======
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
->>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
 
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
-
-# add group column
-d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", "Odontocete")
+d_full$M..kg. <- as.numeric(d_full$M..kg.)
+d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
+d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
+                       ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
 
 # Makes the group when fossil species are included in NULL_ALL_ENP
 #d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
 #d_full$Group[d_full$Family != "Balaenopteridae" & d_full$Family != "Fossil"] <- "Odontocete"
 
-<<<<<<< HEAD
-#d_full <- read.csv("Odontoceti model output v9.5.csv")
-#data_full <- read.csv("Cetacea model output v9.6.csv")
-#d_full <- read_excel("Odontoceti model output v9.5.xlsx")
-
 d_full$MR.exponent = as.factor(d_full$MR.exponent)
 
 
-=======
->>>>>>> d46a069026b06c18878dce1e2641ae600f3dec3d
 #create weighted values
 d_full$Weighted_E_divesurf_max <- d_full$Percent*d_full$E_divesurf_max  #creates a column for E_divesurf_max that is weighted by Percent diet
 d_full$Weighted_E_divesurf_med <- d_full$Percent*d_full$E_divesurf_med  #creates a column for E_divesurf_med that is weighted by Percent diet
@@ -92,11 +81,18 @@ d_strapped <- readRDS(file="d_strapped_12042018.RDS")
 # 
 # p1_logM__weighted_divesurf_max_strapped
 
-
-Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.45") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+# GAMMs with both Odontocetes and Mysticetes in the model
+Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68" & Family != "Balaenidae") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Eff_dive_max_gamm$gam)
 plot(Eff_dive_max_gamm$gam)
+
+#save the model output from R console to a text file to refer to later
+sink("Both_NULL_GAMM_0.68.txt")
+print(summary(Eff_dive_max_gamm$gam))
+sink()
+
+
 
 Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.61") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
@@ -111,16 +107,28 @@ Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% gamm(Weighted_
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Eff_dive_max_gamm$gam)
 
+
 ##EXPLORE Odont v. Myst GAMMs
-Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+Odont_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.75") %>% filter(., Group=="Odontocete") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Odont_Eff_dive_max_gamm$gam)
 plot(Odont_Eff_dive_max_gamm$gam)
 
-Myst_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% filter(., Group=="Rorqual") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
+#save the model output from R console to a text file to refer to later
+sink("Odont_NULL_GAMM_0.75.txt")
+print(summary(Odont_Eff_dive_max_gamm$gam))
+sink()
+
+Myst_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.45") %>% filter(., Group=="Rorqual") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Myst_Eff_dive_max_gamm$gam)
 plot((Myst_Eff_dive_max_gamm$gam))
+
+#save the model output from R console to a text file to refer to later
+sink("Mys_NULL_GAMM_0.45.txt")
+print(summary(Myst_Eff_dive_max_gamm$gam))
+sink()
+
 
 group_Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5)+Group, family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
