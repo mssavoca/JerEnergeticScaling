@@ -9,8 +9,8 @@ library(mgcv)
 library(readxl)
 
 # load data
-d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
-#d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
+#d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
+d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
 
 #d_full <- read_excel("Cetacea model output v10.10.xlsx", sheet = 1)
@@ -126,7 +126,7 @@ plot((Myst_Eff_dive_max_gamm$gam))
 
 #save the model output from R console to a text file to refer to later
 sink("Mys_NULL_GAMM_0.45.txt")
-print(summary(Eff_dive_max_gamm$gam))
+print(summary(Myst_Eff_dive_max_gamm$gam))
 sink()
 
 
