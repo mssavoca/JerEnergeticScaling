@@ -81,13 +81,14 @@ y = 0.2204x1.2438 R² = 0.3387
 # Figure 2B
 ############
 fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.of.that)) +
-  geom_point() + 
-  geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), method = lm, se = FALSE) +
-  geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), method = lm, se = FALSE) +
-  theme_bw() + guides(size=FALSE, color=FALSE) +
-  labs(x = "log[Energy (kJ)]", y = "log[Foraging Efficiency]")
-  # annotation_custom(rastOo, ymin = 2, ymax = 3, xmin = 35, xmax = 45) +
-  # annotation_custom(rastBp, ymin = 1.5, ymax = 1.75, xmin = 2.5, xmax = 4) +
+  geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF") +
+  geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF") +
+  geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", method = lm, se = FALSE) +
+  geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", method = lm, se = FALSE) +
+  guides(size=FALSE, color=FALSE) +  theme_bw() + 
+  labs(x = "log[Energy (kJ)]", y = "log[Foraging Efficiency]") +
+  annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
+  annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12)
 fig_2b + scale_color_npg()
 
 
@@ -95,10 +96,14 @@ fig_2b + scale_color_npg()
 # Figure 2C
 ############
 fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
-  geom_point() +
-  geom_smooth(aes(group = Group), method = lm, se = FALSE) +
+  geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF") +
+  geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF") +
+  geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = Group), color = "#E64B35FF", method = lm, se = FALSE) +
+  geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = Group), color = "#4DBBD5FF", method = lm, se = FALSE) +
   theme_bw() + guides(size=FALSE, color=FALSE) +
-  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]")
+  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]") +
+  annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
+  annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12)
 fig_2c + scale_color_npg()
 
 
@@ -111,10 +116,14 @@ fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), col
   geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
-  annotation_custom(rastOo, ymin = -1, ymax = 0.5, xmin = 3.5, xmax = 5.5) +
-  annotation_custom(rastBp, ymin = 5, ymax = 6.5, xmin = 7, xmax = 10) +
-  annotation_custom(rastBm, ymin = -2, ymax = -1, xmin = 10, xmax = 12.5) +
-  theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-4,8) + xlim(2.75,12.75) +
+  annotation_custom(rastOo, ymin = -2, ymax = -1, xmin = 5.25, xmax = 6.5) +
+  annotation_custom(rastBp, ymin = 6.5, ymax = 8.5, xmin = 9.5, xmax = 12.5) +
+  annotation_custom(rastBm, ymin = -0.5, ymax = 0.5, xmin = 10.55, xmax = 12.75) +
+  annotation_custom(rastPp, ymin = 6.5, ymax = 8, xmin = 3.15, xmax = 3.9) +
+  annotation_custom(rastZsp, ymin = 3.5, ymax = 5, xmin = 7.25, xmax = 8.5) +
+  annotation_custom(rastPm, ymin = -3.5, ymax = -2.25, xmin = 9.5, xmax = 11.5) +
+  annotation_custom(rastBa, ymin = 4.5, ymax = 5.5, xmin = 8.5, xmax = 9.75) +
+  theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-4,8) + xlim(2.75,12.5) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 fig_3 + scale_color_npg()
 
@@ -123,38 +132,24 @@ fig_3 + scale_color_npg()
 # Figure 4
 ###########
 fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR), size = 2) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 2.5) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 2.5) +
+  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR), size = 2.5) +
   geom_point(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value, group=log.of.MR), size = 2) +
   geom_point(data = filter(fig_4_data, Group == "Balaenid"), aes(group=log.of.MR), size = 2) +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dashed") +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dashed") +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid") +
+  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dotted", size = 1.5) +
+  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dotted", size = 1.5) +
+  geom_smooth(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid", se = FALSE, method = lm, size = 1.5) +
   geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
   geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
-  annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 1.75, xmax = 2.75) +
-  annotation_custom(rastBp, ymin = 1.5, ymax = 1.75, xmin = 2.5, xmax = 4) +
-  annotation_custom(rastBm, ymin = 0, ymax = 0.5, xmin = 4.55, xmax = 5.75) +
-  theme_bw() +
-  labs(x = "log[Body mass (kg)]", y = "log[Energetic efficiency]")
-fig_4 + scale_color_npg()
-
-fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value, group=log.of.MR), size = 2) +
-  geom_point(data = filter(fig_4_data, Group == "Balaenid"), aes(group=log.of.MR), size = 2) +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dashed") +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dashed") +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid") +
-  geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
-  geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
-  annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 1.75, xmax = 2.75) +
-  annotation_custom(rastBp, ymin = 1.5, ymax = 1.75, xmin = 2.5, xmax = 4) +
-  annotation_custom(rastBm, ymin = 0, ymax = 0.5, xmin = 4.55, xmax = 5.75) +
-  theme_bw() +
+  annotation_custom(rastPp, ymin = 1, ymax = 1.25, xmin = 1.25, xmax = 1.65) +
+  annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 2, xmax = 2.75) +
+  annotation_custom(rastBp, ymin = 2, ymax = 2.25, xmin = 3.5, xmax = 5) +
+  annotation_custom(rastBm, ymin = -0.05, ymax = 0.45, xmin = 4.55, xmax = 5.75) +
+  annotation_custom(rastfm, ymin = 1.25, ymax = 1.75, xmin = 2.75, xmax = 3.5) +
+  annotation_custom(rastPm, ymin = -0.6, ymax = -0.05, xmin = 3.15, xmax = 4.25) +
+  annotation_custom(rastBw, ymin = 0.95, ymax = 1.45, xmin = 5.5, xmax = 7.25) +
+  theme_bw() + ylim(-0.75,2.5) + xlim(1.15,7) +
   labs(x = "log[Body mass (kg)]", y = "log[Energetic efficiency]")
 fig_4 + scale_color_npg()
 
