@@ -52,19 +52,20 @@ fig_4_data <- read.csv("Figure 4 data.csv")
 ############
 # Figure 2A
 ############
-fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Grouping, shape = Grouping)) + # Change color from Group to Grouping for different plot types
-    geom_point() + 
-    geom_smooth(aes(group = Grouping), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
-    geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
+fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Group, shape = Group)) + # Change shape from Group to Grouping for different plot types
+    geom_point(aes(group = Group)) + 
+    geom_smooth(aes(group = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
+  #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
+    #scale_color_manual(c("#E64B35FF", "#4DBBD5FF")) +
     geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
     theme_bw() +
-    annotation_custom(rastBp, ymin = 14, ymax = 20, xmin = -24, xmax = -3) +
+    annotation_custom(rastBp, ymin = 16, ymax = 24, xmin = -24, xmax = -2) +
     annotation_custom(rastPp, ymin = 2, ymax = 8, xmin = -3.5, xmax = 2.5) +
     annotation_custom(rastZsp, ymin = 30, ymax = 34, xmin = 20, xmax = 32) +
     annotation_custom(rastPm, ymin = 25, ymax = 29, xmin = 43, xmax = 60) +
     # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
     labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive") 
-fig_2a + scale_color_npg()
+fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
   
   
   # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
