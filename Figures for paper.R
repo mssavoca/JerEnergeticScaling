@@ -12,73 +12,100 @@ library(readxl)
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
-  d_full$MR.exponent = as.factor(d_full$MR.exponent)
-  d_full$M..kg. <- as.numeric(d_full$M..kg.)
-  d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
-  d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
-                         ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
+d_full$MR.exponent = as.factor(d_full$MR.exponent)
+d_full$M..kg. <- as.numeric(d_full$M..kg.)
+d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
+d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
+                       ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
 
 d_ind <- read.csv("Stats by individual.csv")
 
 d_sp <- read.csv("Stats by species.csv")
 
 fig_4_data <- read.csv("Figure 4 data.csv")
-  fig_4_data$MR <- as.factor(fig_4_data$MR)
-  fig_4_data$Calc.MR <- as.factor(fig_4_data$Calc.MR)
-  
+fig_4_data$MR <- as.factor(fig_4_data$MR)
+fig_4_data$Calc.MR <- as.factor(fig_4_data$Calc.MR)
+
 # get silhouette images for figures
-  imgOo <- png::readPNG("./Orcinus-orca.png")
-  rastOo <- grid::rasterGrob(imgOo, interpolate = T)
-  imgBp <- png::readPNG("./Balaenoptera-physalus.png")
-  rastBp <- grid::rasterGrob(imgBp, interpolate = T)
-  imgBm <- png::readPNG("./Balaena-mysticetus.png")
-  rastBm <- grid::rasterGrob(imgBm, interpolate = T)
-  imgMn <- png::readPNG("./Megaptera-novaeangliae.png")
-  rastMn <- grid::rasterGrob(imgMn, interpolate = T)
-  imgfm <- png::readPNG("./fossil-mysticete.png")
-  rastfm <- grid::rasterGrob(imgfm, interpolate = T)
-  imgZsp <- png::readPNG("./Ziphius-sp.png")
-  rastZsp <- grid::rasterGrob(imgZsp, interpolate = T)
-  imgBw <- png::readPNG("./Balaenoptera-musculus.png")
-  rastBw <- grid::rasterGrob(imgBw, interpolate = T)
-  imgPm <- png::readPNG("./Physeter-macrocephalus.png")
-  rastPm <- grid::rasterGrob(imgPm, interpolate = T)
-  imgBa <- png::readPNG("./Balaenoptera-acutorostrata.png")
-  rastBa <- grid::rasterGrob(imgBa, interpolate = T)
-  imgPp <- png::readPNG("./Phocoena-phocoena.png")
-  rastPp <- grid::rasterGrob(imgPp, interpolate = T)
-  
+imgOo <- png::readPNG("./Orcinus-orca.png")
+rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+imgBm <- png::readPNG("./Balaena-mysticetus.png")
+rastBm <- grid::rasterGrob(imgBm, interpolate = T)
+imgMn <- png::readPNG("./Megaptera-novaeangliae.png")
+rastMn <- grid::rasterGrob(imgMn, interpolate = T)
+imgfm <- png::readPNG("./fossil-mysticete.png")
+rastfm <- grid::rasterGrob(imgfm, interpolate = T)
+imgZsp <- png::readPNG("./Ziphius-sp.png")
+rastZsp <- grid::rasterGrob(imgZsp, interpolate = T)
+imgBw <- png::readPNG("./Balaenoptera-musculus.png")
+rastBw <- grid::rasterGrob(imgBw, interpolate = T)
+imgPm <- png::readPNG("./Physeter-macrocephalus.png")
+rastPm <- grid::rasterGrob(imgPm, interpolate = T)
+imgBa <- png::readPNG("./Balaenoptera-acutorostrata.png")
+rastBa <- grid::rasterGrob(imgBa, interpolate = T)
+imgPp <- png::readPNG("./Phocoena-phocoena.png")
+rastPp <- grid::rasterGrob(imgPp, interpolate = T)
+
 
 ############
 # Figure 2A
 ############
 fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Group, shape = Group)) + # Change shape from Group to Grouping for different plot types
-    geom_point(aes(group = Group), size = 2.5) + 
-    geom_smooth(aes(group = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
-  #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
-    #scale_color_manual(c("#E64B35FF", "#4DBBD5FF")) +
-    geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
-    theme_bw() + 
-    theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-    annotation_custom(rastBp, ymin = 16, ymax = 24, xmin = -24, xmax = -2) +
-    annotation_custom(rastPp, ymin = 2, ymax = 8, xmin = -3.5, xmax = 2.5) +
-    annotation_custom(rastZsp, ymin = 30, ymax = 34, xmin = 20, xmax = 32) +
-    annotation_custom(rastPm, ymin = 25, ymax = 29, xmin = 43, xmax = 60) +
-    # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
-    labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive") 
-fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
-  
-  
-  # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
-  #annotate("text", x = 10:10, y = 20:25, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
+  geom_point(aes(group = Group), 
+             size = 2) + 
+  geom_smooth(aes(group = Group), 
+              method = lm, 
+              se = FALSE, 
+              size = 1) +       # Change group from Group to Grouping for different plot types
+  geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
+  theme_classic() + 
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  annotation_custom(rastBp, ymin = 16, ymax = 24, xmin = -24, xmax = -2) +
+  annotation_custom(rastPp, ymin = 2, ymax = 8, xmin = -3.5, xmax = 2.5) +
+  annotation_custom(rastZsp, ymin = 30, ymax = 34, xmin = 20, xmax = 32) +
+  annotation_custom(rastPm, ymin = 25, ymax = 29, xmin = 43, xmax = 60) +
+  labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive") 
+color_pal <- c("#4DBBD5FF","#E64B35FF")
+fig_2a +
+  scale_color_manual(values = color_pal) +
+  # closed and open circles
+  scale_shape_manual(values = c(19, 1)) +
+  # Rorqual equations
+  annotate("text", x = -24, y = 57, 
+           label = "y==0.2204*x^{1.2438}",
+           parse = TRUE,
+           hjust = 0,
+           color = color_pal[2]) +
+  annotate("text", x = -24, y = 54, 
+           label = "italic(R^{2})==0.3387",
+           parse = TRUE,
+           hjust = 0,
+           color = color_pal[2]) +
+  # Odontocete equations
+  annotate("text", x = 10, y = 57, 
+           label = "y==0.2204*x^{1.2438}",
+           parse = TRUE,
+           hjust = 0,
+           color = color_pal[1]) +
+  annotate("text", x = 10, y = 54, 
+           label = "italic(R^{2})==0.3387",
+           parse = TRUE,
+           hjust = 0,
+           color = color_pal[1])
+
+
+# + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
+#annotate("text", x = 10:10, y = 20:25, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
 
 
 ("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
 
 y = 0.2204x1.2438 R² = 0.3387
 
-  
-  
+
+
 ############
 # Figure 2B
 ############
