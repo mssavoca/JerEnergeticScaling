@@ -89,7 +89,7 @@ fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.
   geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", method = lm, se = FALSE) +
   guides(size=FALSE, color=FALSE) +  theme_bw() + 
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]") +
+  labs(x = "Maximum dive time - Theoretical dive time", y = "log[energy(kJ)]") +
   annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
   annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12)
 fig_2b + scale_color_npg()
@@ -105,7 +105,7 @@ fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)
   geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = Group), color = "#4DBBD5FF", method = lm, se = FALSE) +
   theme_bw() + guides(size=FALSE, color=FALSE) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency]") +
+  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency + 1]") +
   annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
   annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12)
 fig_2c + scale_color_npg()
