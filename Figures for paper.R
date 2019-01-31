@@ -106,10 +106,8 @@ fig_2b <- ggplot(d_ind, aes(DT_max.TADL, FE_max, shape = Species)) + # Change sh
   annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
   annotation_custom(rastPm, ymin = 30, ymax = 34, xmin = 15, xmax = 32) +
   # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
-  labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive", size = "Depth (m)") 
+  labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive", size = "Max. depth (m)") 
 fig_2b +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
-
-summary(lm(data = filter(d_ind, Group =="Rorqual"), FE_max~DT_max.TADL)) 
   
 
   # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
@@ -138,6 +136,9 @@ fig_2c <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.
 fig_2c + scale_color_npg()
 
 
+summary(lm(data = filter(d_sp, Group=="Odontocete" & log.of.that == "one"), log.value~DT.max...TADL))
+
+
 ############
 # Figure 2D
 ############
@@ -152,6 +153,9 @@ fig_2d <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)
   annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
   annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12)
 fig_2d + scale_color_npg()
+
+plot(lm(data = filter(d_sp, Group=="Rorqual"), logEff_max.0.75~DT.max...TADL))
+
 
 
 ##########
