@@ -68,7 +68,6 @@ fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Group, shape = Species)
     geom_point(aes(group = Group), size = 2.5) + 
     geom_smooth(aes(group = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
   #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
-    #scale_color_manual(c("#E64B35FF", "#4DBBD5FF")) +
     geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
     scale_shape_manual(name = "Species",                      
                        labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
@@ -90,11 +89,10 @@ fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
 # Figure 2B
 ############
 ### COLOR NEEDS TO BE CONTINUOUS
-fig_2b <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = MXD..m., shape = Species)) + # Change shape from Group to Grouping for different plot types
-  geom_point(aes(group = Group), size = 2.5) + 
-  geom_smooth(aes(group = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
+fig_2b <- ggplot(d_ind, aes(DT_max.TADL, FE_max, shape = Species)) + # Change shape from Group to Grouping for different plot types
+  geom_point(aes(size = MXD..m.*2.5)) + 
+  geom_smooth(aes(group = Group, color = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
   #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
-  #scale_color_manual(c("#E64B35FF", "#4DBBD5FF")) +
   geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
   scale_shape_manual(name = "Species",                      
                      labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
@@ -104,14 +102,14 @@ fig_2b <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = MXD..m., shape = Specie
   theme_bw() + 
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   annotation_custom(rastBp, ymin = 16, ymax = 24, xmin = -24, xmax = -2) +
-  annotation_custom(rastPp, ymin = 2, ymax = 8, xmin = -3.5, xmax = 2.5) +
+  annotation_custom(rastPp, ymin = 24, ymax = 32, xmin = -3.5, xmax = 2.5) +
   annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
   annotation_custom(rastPm, ymin = 30, ymax = 34, xmin = 15, xmax = 32) +
   # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
-  labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive") 
+  labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive", size = "Depth (m)") 
 fig_2b +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
 
-  
+summary(lm(data = filter(d_ind, Group =="Rorqual"), FE_max~DT_max.TADL)) 
   
 
   # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
