@@ -126,9 +126,9 @@ y = 0.2204x1.2438 R² = 0.3387
   
   
 ############
-# Figure 2C
+# Figure 2B
 ############
-fig_2c <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.of.that)) +
+fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.of.that)) +
   geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
   geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
   geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", method = lm, se = FALSE) +
@@ -138,7 +138,7 @@ fig_2c <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.
   labs(x = "Maximum dive time - Theoretical dive time", y = "log[energy(kJ)]") +
   annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
   annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12)
-fig_2c + scale_color_npg()
+fig_2b + scale_color_npg()
 
 #Save pdf of plot
 dev.copy2pdf(file="fig2c.pdf", width=11, height=8)
@@ -147,9 +147,9 @@ summary(lm(data = filter(d_sp, Group=="Odontocete" & log.of.that == "one"), log.
 
 
 ############
-# Figure 2D
+# Figure 2C
 ############
-fig_2d <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
+fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
   geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
   geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
   geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = Group), color = "#E64B35FF", method = lm, se = FALSE) +
@@ -159,7 +159,7 @@ fig_2d <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)
   labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency + 1]") +
   annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
   annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12)
-fig_2d + scale_color_npg()
+fig_2c + scale_color_npg()
 
 #Save pdf of plot
 dev.copy2pdf(file="fig2d.pdf", width=11, height=8)
