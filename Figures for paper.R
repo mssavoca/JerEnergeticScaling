@@ -82,7 +82,8 @@ fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Group, shape = Species)
     annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
     annotation_custom(rastPm, ymin = 30, ymax = 34, xmin = 15, xmax = 32) +
     # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
-    labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive", size = "Max. depth (m)") 
+    labs(x = "Maximum dive time - theoretical dive time (min)", y = "Max # feeding events per dive", size = "Max. depth (m)") + 
+    scale_x_continuous(breaks=seq(-25,50,25))
 fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
 
 dev.copy2pdf(file="fig2a.pdf", width=12, height=8)
@@ -128,20 +129,27 @@ y = 0.2204x1.2438 R² = 0.3387
 ############
 # Figure 2B
 ############
-fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = log.of.that)) +
+fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = Species)) +
   geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
   geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
   geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", method = lm, se = FALSE) +
   geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", method = lm, se = FALSE) +
+  geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
+  scale_shape_manual(name = "Species",                      
+                     labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
+                                "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
+                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
+                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
   guides(size=FALSE, color=FALSE) +  theme_bw() + 
-  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold"), legend.position="none") +
-  labs(x = "Maximum dive time - Theoretical dive time", y = "log[energy(kJ)]") +
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[energy(kJ)]") +
   annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
-  annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12)
+  annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
+  scale_x_continuous(breaks=seq(-25,50,25))
 fig_2b + scale_color_npg()
 
 #Save pdf of plot
-dev.copy2pdf(file="fig2c.pdf", width=11, height=8)
+dev.copy2pdf(file="fig2b.pdf", width=12, height=8)
 
 summary(lm(data = filter(d_sp, Group=="Odontocete" & log.of.that == "one"), log.value~DT.max...TADL))
 
@@ -149,20 +157,27 @@ summary(lm(data = filter(d_sp, Group=="Odontocete" & log.of.that == "one"), log.
 ############
 # Figure 2C
 ############
-fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group)) +
+fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group, shape = Species)) +
   geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
   geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
   geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = Group), color = "#E64B35FF", method = lm, se = FALSE) +
   geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = Group), color = "#4DBBD5FF", method = lm, se = FALSE) +
+  geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
+  scale_shape_manual(name = "Species",                      
+                     labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
+                                "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
+                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
+                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
   theme_bw() + guides(size=FALSE, color=FALSE) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "Maximum dive time - Theoretical dive time", y = "log[Foraging Efficiency + 1]") +
+  labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[Foraging Efficiency + 1]") +
   annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
-  annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12)
+  annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12) +
+  scale_x_continuous(breaks=seq(-25,50,25))
 fig_2c + scale_color_npg()
 
 #Save pdf of plot
-dev.copy2pdf(file="fig2d.pdf", width=11, height=8)
+dev.copy2pdf(file="fig2c.pdf", width=12, height=8)
 
 plot(lm(data = filter(d_sp, Group=="Rorqual"), logEff_max.0.75~DT.max...TADL))
 
