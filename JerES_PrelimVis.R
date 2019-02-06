@@ -85,7 +85,9 @@ d_strapped <- readRDS(file="d_strapped_12042018.RDS")
 Eff_dive_max_gamm<- filter(d_strapped, MR.exponent == "0.68" & Family != "Balaenidae") %>% gamm(Weighted_E_divesurf_max ~ s(M..kg.,k=5)+s(Prey.W..g., k=5), family=poisson(link='log'), random=list(Species=~1), data=.)
 ### $gam to look at gam effects. $lme to look at random effects.
 summary(Eff_dive_max_gamm$gam)
-plot(Eff_dive_max_gamm$gam)
+par(mfrow=c(1,2))
+plot(Eff_dive_max_gamm$gam, select=1, xlab="Whale mass (kg)", ylab="Foraging efficiency",shade=T, cex.lab =1.5,cex.axis =1.5)
+plot(Eff_dive_max_gamm$gam, select=2, xlab="Prey engulfment capacity (g)", ylab="Foraging efficiency",shade=T, cex.lab =1.5, cex.axis =1.5)
 
 #save the model output from R console to a text file to refer to later
 sink("Both_NULL_GAMM_0.68.txt")
