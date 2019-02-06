@@ -211,53 +211,52 @@ plot(lm(data = filter(d_sp, Group=="Rorqual"), logEff_max.0.75~DT.max...TADL))
 # Figure 3
 ##########
 
-fig_3a <- ggplot(data = filter(d_full, Family != "Balaenidae"), aes(x = log(M..kg.), y = log((Prey.W..g.*1000)/M..kg.), color = Group)) +
+fig_3a <- ggplot(data = filter(d_full_final, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
   geom_point(aes(size = (Percent)*10), alpha = 0.5) +  
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
-  scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
+  geom_abline(intercept = 0, slope = 1, linetype ="dashed") + 
   annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, ymin = 2, ymax = 3, xmin = 5.75, xmax = 7) +
-  annotation_custom(rastBp, ymin = 6.5, ymax = 8.5, xmin = 12, xmax = 15) +
-  annotation_custom(rastPp, ymin = 6.5, ymax = 8, xmin = 3.15, xmax = 3.9) +
-  annotation_custom(rastZsp, ymin = 1, ymax = 2.5, xmin = 7.25, xmax = 8.75) +
-  annotation_custom(rastPm, ymin = 2, ymax = 3.5, xmin = 10, xmax = 12.25) +
-  annotation_custom(rastBa, ymin = 7, ymax = 8, xmin = 8.5, xmax = 9.75) +
+  annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
+  annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
+  annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
+  annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
+  annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
+  annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(0,9) + xlim(3,15) +
+  ylim(1,7.25) + xlim(1,6.25) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "log[Mass (kg)]", y = "log[Prey mass (kg)]/Predator mass (kg)")
-cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
+  labs(x = "log[Mass (kg)]", y = "log[Prey Energy (kJ)]")
 fig_3a + scale_color_manual(values = cols)
 
 #Save pdf of plot
-dev.copy2pdf(file="fig3a.pdf", width=15, height=8)
+dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
 
 
-fig_3b <- ggplot(data = d_full_final, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group)) +
+fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) +  
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
   annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, ymin = -2, ymax = -1, xmin = 5.25, xmax = 6.5) +
-  annotation_custom(rastBp, ymin = 6.5, ymax = 8.5, xmin = 9.5, xmax = 12.5) +
-  annotation_custom(rastBm, ymin = -0.5, ymax = 0.5, xmin = 10.55, xmax = 12.75) +
-  annotation_custom(rastPp, ymin = 6.5, ymax = 8, xmin = 3.15, xmax = 3.9) +
-  annotation_custom(rastZsp, ymin = -2, ymax = -4, xmin = 7.25, xmax = 8.75) +
-  annotation_custom(rastPm, ymin = -3.5, ymax = -2.25, xmin = 9.5, xmax = 11.5) +
-  annotation_custom(rastfm, ymin = 3.2, ymax = 4.7, xmin =7.25, xmax = 8.25) +
-  annotation_custom(rastBa, ymin = 4.5, ymax = 5.5, xmin = 8.5, xmax = 9.75) +
-  annotation_custom(rastBw, ymin = 2, ymax = 4, xmin = 13, xmax = 16.5) +
+  annotation_custom(rastOo, xmin = 2, xmax = 3.85,  ymin = -2.65, ymax = -1.6) +
+  annotation_custom(rastBp, xmin = 3.25, xmax = 6, ymin = 6.75, ymax = 8) +
+  annotation_custom(rastPp, xmin = 2.4, xmax = 2.7, ymin = 3.75, ymax = 4.25) +
+  annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -3.65, ymax = -2.65) +
+  annotation_custom(rastPm, xmin = 4.35, xmax = 5.25, ymin = -3, ymax = -1.5) +
+  annotation_custom(rastBa, xmin = 3.65, xmax = 4.25, ymin = 4.5, ymax = 5.5) +
+  annotation_custom(rastBm, xmin = 4.45, xmax = 5.65, ymin = -0.8, ymax = 0.5) +
+  annotation_custom(rastfm, ymin = 3.5, ymax = 4.5, xmin = 3.15, xmax = 3.65) +
+  annotation_custom(rastBw,  xmin = 4.5, xmax = 7.25, ymin = 2.9, ymax = 4.9) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(-4,8) + xlim(3,16.5) +
+  ylim(-4,8) + xlim(2.25,6.5) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
 fig_3b + scale_color_manual(values = cols)
 
-#Save pdf of plot
+ #Save pdf of plot
 dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
 
 
