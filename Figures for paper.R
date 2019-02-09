@@ -232,7 +232,9 @@ fig_3a + scale_color_manual(values = cols)
 #Save pdf of plot
 dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
+m1 = lm(data =filter(d_full_final, Group == "Odontocete"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 
+smooth_vals = predict(lm(log10(M..kg.)~log10(Energy..kJ.),d_full_final))
 
 fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) +  
