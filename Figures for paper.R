@@ -261,6 +261,8 @@ fig_3b + scale_color_manual(values = cols)
  #Save pdf of plot
 dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
 
+# sweet tidy code from Max
+d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
 
 
 # fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
