@@ -233,7 +233,6 @@ dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
 
 # sweet tidy code from Max
 d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
-
 d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>% summarize(wgtMean = log10(weighted.mean(E_divesurf_max)))
 
 # fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
