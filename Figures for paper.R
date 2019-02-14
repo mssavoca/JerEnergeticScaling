@@ -89,40 +89,9 @@ fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
 dev.copy2pdf(file="fig2a.pdf", width=14, height=8)
 
 
-############
-# Figure 2B
-# ############
-# ### COLOR NEEDS TO BE CONTINUOUS
-# fig_2b <- ggplot(d_ind, aes(DT_max.TADL, FE_max, shape = Species)) + # Change shape from Group to Grouping for different plot types
-#   geom_point(aes(size = MXD..m.)) + 
-#   geom_smooth(aes(group = Group, color = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
-#   #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
-#   geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
-#   scale_shape_manual(name = "Species",                      
-#                      labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
-#                                 "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
-#                                 "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
-#                      values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
-#   theme_bw() + 
-#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-#   annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-#   annotation_custom(rastBp, ymin = 16, ymax = 24, xmin = -24, xmax = -2) +
-#   annotation_custom(rastPp, ymin = 24, ymax = 32, xmin = -3.5, xmax = 2.5) +
-#   annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
-#   annotation_custom(rastPm, ymin = 30, ymax = 34, xmin = 15, xmax = 32) +
-#   # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
-#   labs(x = "Max dive duration - TADL", y = "Max # feeding events per dive", size = "Max. depth (m)") 
-# fig_2b +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
+# ("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
 # 
-# dev.copy2pdf(file="fig2b.pdf", width=12, height=8) 
-
-  # + annotate("text", x = 2, y = 20, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
-  #annotate("text", x = 10:10, y = 20:25, label = c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387"))
-
-
-("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
-
-y = 0.2204x1.2438 R² = 0.3387
+# y = 0.2204x1.2438 R² = 0.3387
 
   
   
@@ -131,26 +100,6 @@ y = 0.2204x1.2438 R² = 0.3387
 ############
 #COLORS DARK/LIGHT RED, DARK/LIGHT BLUE
 
-fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = Species)) +
-  geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
-  geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
-  geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", method = lm, se = FALSE) +
-  geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", method = lm, se = FALSE) +
-  geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
-  scale_shape_manual(name = "Species",                      
-                     labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
-                                "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
-                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
-                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
-  guides(size=FALSE, color=FALSE) +  theme_bw() + 
-  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[energy(kJ)]") +
-  annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
-  annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
-  scale_x_continuous(breaks=seq(-25,50,25))
-fig_2b + scale_color_npg()
-
-    
 fig_2b_final <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = log.of.that, shape = Species)) +
     geom_point(data = filter(d_sp, log.of.that == "in" & Group == "Rorqual"), colour = "#E64B35FF", size = 3) +
     geom_point(data = filter(d_sp, log.of.that == "out" & Group == "Rorqual"), colour = "darkred", size = 3) +
@@ -176,6 +125,27 @@ fig_2b_final + scale_color_npg()
 
 #Save pdf of plot
 dev.copy2pdf(file="fig2b_final.pdf", width=13, height=8)
+
+
+# 
+# fig_2b <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = Group, shape = Species)) +
+#   geom_point(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", size = 3) +
+#   geom_point(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", size = 3) +
+#   geom_smooth(data = filter(d_sp, Group == "Rorqual"), aes(group = log.of.that), color = "#E64B35FF", method = lm, se = FALSE) +
+#   geom_smooth(data = filter(d_sp, Group == "Odontocete"), aes(group = log.of.that), color = "#4DBBD5FF", method = lm, se = FALSE) +
+#   geom_vline(xintercept=0, linetype="dashed", color = "gray50") +
+#   scale_shape_manual(name = "Species",                      
+#                      labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
+#                                 "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
+#                                 "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
+#                      values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
+#   guides(size=FALSE, color=FALSE) +  theme_bw() + 
+#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+#   labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[energy(kJ)]") +
+#   annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
+#   annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
+#   scale_x_continuous(breaks=seq(-25,50,25))
+# fig_2b + scale_color_npg()
 
 
 ############
@@ -234,7 +204,6 @@ dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
 m1 = lm(data =filter(d_full_final, Group == "Odontocete"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 
-smooth_vals = predict(lm(log10(M..kg.)~log10(Energy..kJ.),d_full_final))
 
 fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log(E_divesurf_max), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) +  
@@ -261,6 +230,7 @@ fig_3b + scale_color_manual(values = cols)
  #Save pdf of plot
 dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
 
+
 # sweet tidy code from Max
 d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
 
@@ -285,29 +255,29 @@ d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(
 
 
 
-###########
-# Figure 4
-###########
-fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 3.25) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 3.25) +
-  geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR), size = 3.25) +
-  geom_point(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value, group=log.of.MR), size = 3) +
-  geom_point(data = filter(fig_4_data, Group == "Balaenid"), aes(group=log.of.MR), size = 3) +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dotted", size = 1.5) +
-  geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dotted", size = 1.5) +
-  geom_smooth(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid", se = FALSE, method = lm, size = 1.5) +
-  geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
-  geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
-  annotation_custom(rastPp, ymin = 1, ymax = 1.25, xmin = 1.25, xmax = 1.65) +
-  annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 2, xmax = 2.75) +
-  annotation_custom(rastBp, ymin = 2, ymax = 2.25, xmin = 3.5, xmax = 5) +
-  annotation_custom(rastBm, ymin = -0.05, ymax = 0.45, xmin = 4.55, xmax = 5.75) +
-  annotation_custom(rastfm, ymin = 1.25, ymax = 1.75, xmin = 2.75, xmax = 3.5) +
-  annotation_custom(rastPm, ymin = -0.6, ymax = -0.05, xmin = 3.15, xmax = 4.25) +
-  annotation_custom(rastBw, ymin = 0.95, ymax = 1.45, xmin = 5.5, xmax = 7.25) +
-  theme_bw() + ylim(-0.75,2.5) + xlim(1.15,7) +
-  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "log[Body mass (kg)]", y = "log[Energetic efficiency]")
-fig_4 + scale_color_npg()
+# ###########
+# # Figure 4
+# ###########
+# fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
+#   geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 3.25) +
+#   geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 3.25) +
+#   geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), aes(group=log.of.MR), size = 3.25) +
+#   geom_point(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value, group=log.of.MR), size = 3) +
+#   geom_point(data = filter(fig_4_data, Group == "Balaenid"), aes(group=log.of.MR), size = 3) +
+#   geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), linetype = "dotted", size = 1.5) +
+#   geom_line(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), linetype = "dotted", size = 1.5) +
+#   geom_smooth(data = filter(fig_4_data, Group == "Rorqual" & Status == "extant"), linetype = "solid", se = FALSE, method = lm, size = 1.5) +
+#   geom_line(data = filter(fig_4_data, Group == "Odontocete"), aes(x = logMC, y = Calc.value)) +
+#   geom_line(data = filter(fig_4_data, Group == "Balaenid")) +
+#   annotation_custom(rastPp, ymin = 1, ymax = 1.25, xmin = 1.25, xmax = 1.65) +
+#   annotation_custom(rastOo, ymin = -0.15, ymax = 0.25, xmin = 2, xmax = 2.75) +
+#   annotation_custom(rastBp, ymin = 2, ymax = 2.25, xmin = 3.5, xmax = 5) +
+#   annotation_custom(rastBm, ymin = -0.05, ymax = 0.45, xmin = 4.55, xmax = 5.75) +
+#   annotation_custom(rastfm, ymin = 1.25, ymax = 1.75, xmin = 2.75, xmax = 3.5) +
+#   annotation_custom(rastPm, ymin = -0.6, ymax = -0.05, xmin = 3.15, xmax = 4.25) +
+#   annotation_custom(rastBw, ymin = 0.95, ymax = 1.45, xmin = 5.5, xmax = 7.25) +
+#   theme_bw() + ylim(-0.75,2.5) + xlim(1.15,7) +
+#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+#   labs(x = "log[Body mass (kg)]", y = "log[Energetic efficiency]")
+# fig_4 + scale_color_npg()
 
