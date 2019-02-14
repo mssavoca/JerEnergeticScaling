@@ -205,23 +205,23 @@ dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 m1 = lm(data =filter(d_full_final, Group == "Odontocete"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 
 
-fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log(E_divesurf_max), color = Group)) +
+fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) +  
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
   annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, xmin = 2, xmax = 3.85,  ymin = -2.65, ymax = -1.6) +
-  annotation_custom(rastBp, xmin = 3.25, xmax = 6, ymin = 6.75, ymax = 8) +
-  annotation_custom(rastPp, xmin = 2.4, xmax = 2.7, ymin = 3.75, ymax = 4.25) +
-  annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -3.65, ymax = -2.65) +
-  annotation_custom(rastPm, xmin = 4.35, xmax = 5.25, ymin = -3, ymax = -1.5) +
-  annotation_custom(rastBa, xmin = 3.65, xmax = 4.25, ymin = 4.5, ymax = 5.5) +
-  annotation_custom(rastBm, xmin = 4.45, xmax = 5.65, ymin = -0.8, ymax = 0.5) +
-  annotation_custom(rastfm, ymin = 3.5, ymax = 4.5, xmin = 3.15, xmax = 3.65) +
-  annotation_custom(rastBw,  xmin = 4.5, xmax = 7.25, ymin = 2.9, ymax = 4.9) +
+  annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
+  annotation_custom(rastBp, xmin = 3.9, xmax = 5.25, ymin = 2.9, ymax = 4) +
+  annotation_custom(rastPp, xmin = 2.4, xmax = 2.65, ymin = 1.5, ymax = 2) +
+  annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -2, ymax = -0.75) +
+  annotation_custom(rastPm, xmin = 4.25, xmax = 5.25, ymin = -2, ymax = -0.5) +
+  annotation_custom(rastBa, xmin = 3.6, xmax = 4.1, ymin = 2.05, ymax = 2.5) +
+  annotation_custom(rastBm, xmin = 4.6, xmax = 5.7, ymin = -0.75, ymax = 0.45) +
+  annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
+  annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(-4,8) + xlim(2.25,6.5) +
+  ylim(-2,4) + xlim(2.4,6.5) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
@@ -234,6 +234,7 @@ dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
 # sweet tidy code from Max
 d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
 
+d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>% summarize(wgtMean = log10(weighted.mean(E_divesurf_max)))
 
 # fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
 #   geom_point(aes(size = (Percent)*10, group = MR.exponent), alpha = 0.5) +  
