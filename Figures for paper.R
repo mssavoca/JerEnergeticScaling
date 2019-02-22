@@ -76,17 +76,17 @@ fig_2a <- ggplot(d_ind, aes(DT_max.TADL, FE_max, color = Group, shape = Species)
                        values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
     theme_bw() + 
     theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-    annotation_custom(rastfm, ymin = -50, ymax = -34, xmin = 15, xmax = 32) +
-    annotation_custom(rastBp, ymin = 16.5, ymax = 24.5, xmin = -24, xmax = -2) +
-    annotation_custom(rastPp, ymin = 1, ymax = 7, xmin = -3.5, xmax = 2.5) +
-    annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
-    annotation_custom(rastPm, ymin = 30, ymax = 35.5, xmin = 12, xmax = 31) +
+    # annotation_custom(rastfm, ymin = -50, ymax = -34, xmin = 15, xmax = 32) +
+    # annotation_custom(rastBp, ymin = 16.5, ymax = 24.5, xmin = -24, xmax = -2) +
+    # annotation_custom(rastPp, ymin = 1, ymax = 7, xmin = -3.5, xmax = 2.5) +
+    # annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
+    # annotation_custom(rastPm, ymin = 30, ymax = 35.5, xmin = 12, xmax = 31) +
     # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
     labs(x = "Maximum dive time - theoretical dive time (min)", y = "Max # feeding events per dive", size = "Max. depth (m)") + 
     scale_x_continuous(breaks=seq(-25,50,25))
-fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
+fig_2a +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF")) + theme(legend.position="none")
 
-dev.copy2pdf(file="fig2a.pdf", width=14, height=8)
+dev.copy2pdf(file="fig2a_withoutlegend.pdf", width=13, height=8)
 
 
 # ("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
@@ -118,10 +118,10 @@ fig_2b_final <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = log.of.that, 
   guides(size=FALSE, color=FALSE) +  theme_bw() + 
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[energy(kJ)]") +
-  annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
-  annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
+  # annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
+  # annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
   scale_x_continuous(breaks=seq(-25,50,25))
-fig_2b_final + scale_color_npg()
+fig_2b_final + scale_color_npg()  + theme(legend.position="none")
 
 #Save pdf of plot
 dev.copy2pdf(file="fig2b_final.pdf", width=13, height=8)
@@ -165,13 +165,13 @@ fig_2c <- ggplot(data = d_sp, aes(DT.max...TADL, logEff_max.0.75, color = Group,
   theme_bw() + guides(size=FALSE, color=FALSE) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[Foraging Efficiency + 1]") +
-  annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
-  annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12) +
+  # annotation_custom(rastOo, ymin = 0.25, ymax = 0.75, xmin = 30, xmax = 40) +
+  # annotation_custom(rastBp, ymin = 1.25, ymax = 1.75, xmin = -8, xmax = 12) +
   scale_x_continuous(breaks=seq(-25,50,25))
-fig_2c + scale_color_npg()
+fig_2c + scale_color_npg()  + theme(legend.position="none")
 
 #Save pdf of plot
-dev.copy2pdf(file="fig2c.pdf", width=13, height=8)
+dev.copy2pdf(file="fig2c.pdf", width=13, height=8) 
 
 plot(lm(data = filter(d_sp, Group=="Rorqual"), logEff_max.0.75~DT.max...TADL))
 
@@ -186,15 +186,15 @@ fig_3a <- ggplot(data = filter(d_full_final, Family != "Balaenidae"), aes(x = lo
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
   geom_abline(intercept = 0, slope = 1, linetype ="dashed") + 
-  annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
-  annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
-  annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
-  annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
-  annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
-  annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
+  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  # annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
+  # annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
+  # annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
+  # annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
+  # annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
+  # annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(1,7.25) + xlim(1,6.25) +
+  ylim(1,7) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Prey Energy (kJ)]")
 fig_3a + scale_color_manual(values = cols)
@@ -210,25 +210,25 @@ fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log10(E_divesur
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
-  annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
-  annotation_custom(rastBp, xmin = 3.9, xmax = 5.25, ymin = 2.9, ymax = 4) +
-  annotation_custom(rastPp, xmin = 2.4, xmax = 2.65, ymin = 1.5, ymax = 2) +
-  annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -2, ymax = -0.75) +
-  annotation_custom(rastPm, xmin = 4.25, xmax = 5.25, ymin = -2, ymax = -0.5) +
-  annotation_custom(rastBa, xmin = 3.6, xmax = 4.1, ymin = 2.05, ymax = 2.5) +
-  annotation_custom(rastBm, xmin = 4.6, xmax = 5.7, ymin = -0.75, ymax = 0.45) +
-  annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
-  annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
+  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  # annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
+  # annotation_custom(rastBp, xmin = 3.9, xmax = 5.25, ymin = 2.9, ymax = 4) +
+  # annotation_custom(rastPp, xmin = 2.4, xmax = 2.65, ymin = 1.5, ymax = 2) +
+  # annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -2, ymax = -0.75) +
+  # annotation_custom(rastPm, xmin = 4.25, xmax = 5.25, ymin = -2, ymax = -0.5) +
+  # annotation_custom(rastBa, xmin = 3.6, xmax = 4.1, ymin = 2.05, ymax = 2.5) +
+  # annotation_custom(rastBm, xmin = 4.6, xmax = 5.7, ymin = -0.75, ymax = 0.45) +
+  # annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
+  # annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(-2,4) + xlim(2.4,6.5) +
+  ylim(-2,4) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
-fig_3b + scale_color_manual(values = cols)
+fig_3b + scale_color_manual(values = cols) + theme(legend.position="none")
 
  #Save pdf of plot
-dev.copy2pdf(file="fig3b.pdf", width=15, height=8)
+dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
 
 
 # sweet tidy code from Max
