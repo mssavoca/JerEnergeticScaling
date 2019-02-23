@@ -18,7 +18,11 @@ d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
   d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
   d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
                          ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
-
+  d_full$Grouping <- ifelse(d_full$Family == "Balaenopteridae", "Balaenopteridae", 
+                            ifelse(d_full$Family %in% c("Delphinidae", "Phocoenidae"), "Delphinidae and Phocoenidae",
+                                   ifelse(d_full$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
+                                          "Balaenidae")))
+  
 d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")
   d_full_final <- subset(d_full_final, select = c(Family:MR.exponent))
   d_full_final$MR.exponent = as.factor(d_full_final$MR.exponent)
@@ -117,7 +121,7 @@ fig_2b_final <- ggplot(d_sp, aes(DT.max...TADL, log.value, color = log.of.that, 
                      values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
   guides(size=FALSE, color=FALSE) +  theme_bw() + 
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[energy(kJ)]") +
+  labs(x = "Maximum dive time - theoretical dive time (min)", y = "log[Energy(kJ)]") +
   # annotation_custom(rastOo, ymin = 2.5, ymax = 3.5, xmin = 30, xmax = 40) +
   # annotation_custom(rastBp, ymin = 5.5, ymax = 6, xmin = -8, xmax = 12) +
   scale_x_continuous(breaks=seq(-25,50,25))
@@ -185,14 +189,14 @@ fig_3a <- ggplot(data = filter(d_full_final, Family != "Balaenidae"), aes(x = lo
   geom_point(aes(size = (Percent)*10), alpha = 0.5) +  
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
-  geom_abline(intercept = 0, slope = 1, linetype ="dashed") + 
-  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  # annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
-  # annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
-  # annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
-  # annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
-  # annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
-  # annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
+  geom_abline(intercept = 0, slope = 1, linetype ="dashed", size = 1.15) + 
+  annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
+  annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
+  annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
+  annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
+  annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
+  annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
   ylim(1,7) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
@@ -252,6 +256,32 @@ d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>%
 #   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
 #   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 # fig_3 + scale_color_npg()
+
+
+#######################
+# Density plot of diet 
+#######################
+
+d_full$Grouping <- as.factor(fct_relevel(d_full$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
+fig4 <- d_full %>% filter(Grouping != "Balaenidae" & "MR.exponent" == 0.75) %>% 
+  ggplot(aes(Energy..kJ., fill = paste(Genus, Species))) + 
+  geom_density(aes(weight = Percent), alpha = 0.4) + 
+  scale_x_log10(labels = scales::comma) + 
+ # scale_x_continuous(labels = scales::comma) +
+  facet_wrap(~ Grouping) + 
+  xlab("log[Prey energy (kJ)]") + ylab("frequency") +
+  theme_classic() + labs(fill="Species") +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16,face="bold"),
+        plot.title = element_text(hjust = 0.5, size = 16), 
+        strip.text.x = element_text(size = 14)) 
+fig4
+#Save pdf of plot
+dev.copy2pdf(file="fig4.pdf", width=14, height=8)
+
+
+
+
 
 
 
