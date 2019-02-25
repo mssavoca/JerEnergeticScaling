@@ -194,9 +194,11 @@ ggsave("fig3a.tiff", width = 14, height = 8, units = "in")
 
 #m1 = lm(data =filter(d_full_final, Group == "Odontocete"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 
+d_other <- filter(d_full_final, Group %in% c("Hypothetical", "Balaenid", "Fossil"))
 
 fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
-  geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) +  
+  #geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
+  geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
@@ -218,7 +220,7 @@ cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "dar
 fig_3b + scale_color_manual(values = cols) + theme(legend.position="none")
 
 # Save plots
-ggsave("fig3b.tiff", width = 14, height = 8, units = "in")
+ggsave("fig3b_nopoints.tiff", width = 14, height = 8, units = "in")
 #dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
 
 
