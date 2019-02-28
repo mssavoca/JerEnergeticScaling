@@ -233,9 +233,11 @@ fig_3b_extended <- ggplot(data = filter(d_full_final, !Group %in% c("Odontocete"
   ylim(-2,4) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
-
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
 fig_3b_extended + scale_color_manual(values = cols) + theme(legend.position="none")
+
+ggsave("fig3b_extended.tiff", width = 14, height = 8, units = "in")
+#dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
 
 
 # sweet tidy code from Max
