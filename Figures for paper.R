@@ -226,9 +226,10 @@ ggsave("fig3b_nopoints.tiff", width = 14, height = 8, units = "in")
 fig_3b_extended <- ggplot(data = filter(d_full_final, !Group %in% c("Odontocete", "Balaenid")), 
                           aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
-  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(group = MR.exponent), method = "lm", se = FALSE) +
-  geom_line(data = filter(d_full_final, Group == "Fossil"), aes(group = MR.exponent)) +
-  geom_line(data = filter(d_full_final, Group == "Hypothetical"), aes(group = MR.exponent)) +
+  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(group = MR.exponent, linetype = MR.exponent), method = "lm", se = FALSE) +
+  geom_line(data = filter(d_full_final, Group == "Fossil"), aes(group = MR.exponent, linetype = MR.exponent)) +
+  geom_line(data = filter(d_full_final, Group == "Hypothetical"), aes(group = MR.exponent, linetype = MR.exponent)) +
+  scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
   ylim(-2,4) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
