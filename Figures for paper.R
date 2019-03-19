@@ -9,7 +9,9 @@ library(ggsci)
 library(readxl)
 library(tidyverse)
 
+###########
 # load data
+###########
 #d_full <- read.csv("Cetacea model output NULL_EXTANT.csv")
 d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
 #d_full <- read.csv("Cetacea model output NULL_ALL_ENP.csv")
@@ -33,7 +35,7 @@ d_full_3.18.19 <- read.csv("Cetacea model output BOUT_EXTANT_final_3.18.19.csv")
                                  ifelse(d_full_3.18.19$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
                                         "Balaenidae")))
   
-d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")  # EARLY 2019 file, d_full_3.18.19 is newer
+d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")    # EARLY 2019 file, d_full_3.18.19 is newer
   d_full_final <- subset(d_full_final, select = c(Family:MR.exponent))
   d_full_final$MR.exponent = as.factor(d_full_final$MR.exponent)
   d_full_final$Percent = as.numeric(d_full_final$Percent)
@@ -240,13 +242,13 @@ m_fig_3a = lm(data =filter(d_full_3.18.19, Group == "Rorqual"), log10(Energy..kJ
 summary(m_fig_3a)
 
 
-#######################
-# Density plot of diet 
-#######################
+#################################
+# Density plot of diet, Figure 3B 
+#################################
 
 d_full_3.18.19$Grouping <- as.factor(fct_relevel(d_full_3.18.19$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
 fig3b <- d_full_3.18.19 %>% filter(Grouping != "Balaenidae") %>% 
-  ggplot(aes(x = Energy..kJ., y=..scaled.., fill = paste(Genus, Species))) + 
+  ggplot(aes(x = Energy..kJ., fill = paste(Genus, Species))) + 
   geom_density(aes(weight = Percent), alpha = 0.4) + 
   scale_x_log10(labels = scales::comma) + 
   # scale_x_continuous(labels = scales::comma) +
@@ -268,10 +270,10 @@ ggsave("fig3b.tiff", width = 14, height = 8, units = "in")
 # Figure 4
 ##########
 
-d_other <- filter(d_full_final, Group %in% c("Hypothetical", "Balaenid", "Fossil"))
+d_other <- filter(d_full_final, Group == "Balaenid")
 
 fig_4 <- ggplot(data = d_full_3.18.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
-  #geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
+  geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
   geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
   geom_smooth(data = filter(d_full_3.18.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   geom_smooth(data = filter(d_full_3.18.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
@@ -287,18 +289,20 @@ fig_4 <- ggplot(data = d_full_3.18.19, aes(x = log10(M..kg.), y = log10(E_divesu
   # annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
   # annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  #ylim(-2,4) + xlim(1,6) +
+  ylim(-2,4) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-  labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
+  labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
 fig_4 + scale_color_manual(values = cols) + theme(legend.position="none")
 
 # Save plots
-ggsave("fig3b_nopoints.tiff", width = 14, height = 8, units = "in")
-#dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
+ggsave("fig4.tiff", width = 14, height = 8, units = "in")
+dev.copy2pdf(file="fig4.pdf", width=14, height=8)
 
 
-
+####################
+# Extended Figure 3b
+####################
 
 fig_3b_extended <- ggplot(data = filter(d_full_final, !Group %in% c("Odontocete", "Balaenid")), 
                           aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
@@ -316,30 +320,6 @@ fig_3b_extended + scale_color_manual(values = cols) + theme(legend.position="non
 
 ggsave("fig3b_extended.tiff", width = 14, height = 8, units = "in")
 #dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
-
-
-# sweet tidy code from Max
-d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
-d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>% summarize(wgtMean = log10(weighted.mean(E_divesurf_max)))
-
-# fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
-#   geom_point(aes(size = (Percent)*10, group = MR.exponent), alpha = 0.5) +  
-#   geom_smooth(data = filter(d_full, MR.exponent == 0.45), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
-#   geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
-#   geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
-#   geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
-#   annotation_custom(rastOo, ymin = -2, ymax = -1, xmin = 5.25, xmax = 6.5) +
-#   annotation_custom(rastBp, ymin = 6.5, ymax = 8.5, xmin = 9.5, xmax = 12.5) +
-#   annotation_custom(rastBm, ymin = -0.5, ymax = 0.5, xmin = 10.55, xmax = 12.75) +
-#   annotation_custom(rastPp, ymin = 6.5, ymax = 8, xmin = 3.15, xmax = 3.9) +
-#   annotation_custom(rastZsp, ymin = 3.5, ymax = 5, xmin = 7.25, xmax = 8.5) +
-#   annotation_custom(rastPm, ymin = -3.5, ymax = -2.25, xmin = 9.5, xmax = 11.5) +
-#   annotation_custom(rastBa, ymin = 4.5, ymax = 5.5, xmin = 8.5, xmax = 9.75) +
-#   theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-4,8) + xlim(2.75,12.5) +
-#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
-#   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
-# fig_3 + scale_color_npg()
-
 
 
 
@@ -371,9 +351,7 @@ d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>%
 
 
 
-# ###########
-# # Figure 4
-# ###########
+
 # fig_4 <- ggplot(data = fig_4_data, aes(logMC, log.of.MR, color = MR, shape = Group)) +
 #   geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "fossil"), aes(group=log.of.MR), size = 3.25) +
 #   geom_point(data = filter(fig_4_data, Group == "Rorqual" & Status == "hypothetical"), aes(group=log.of.MR), size = 3.25) +
@@ -396,4 +374,28 @@ d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>%
 #   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
 #   labs(x = "log[Body mass (kg)]", y = "log[Energetic efficiency]")
 # fig_4 + scale_color_npg()
+
+# # sweet tidy code from Max
+# d_full_final %>% group_by(Genus, Species) %>% summarize(wgtMean = weighted.mean(Prey.W..g., Percent))
+# d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>% summarize(wgtMean = log10(weighted.mean(E_divesurf_max)))
+
+# fig_3 <- ggplot(data = d_full, aes(x = log(M..kg.), y = log(E_divesurf_max), color = Group, shape = MR.exponent)) +
+#   geom_point(aes(size = (Percent)*10, group = MR.exponent), alpha = 0.5) +  
+#   geom_smooth(data = filter(d_full, MR.exponent == 0.45), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+#   geom_smooth(data = filter(d_full, MR.exponent == 0.61), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+#   geom_smooth(data = filter(d_full, MR.exponent == 0.68), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+#   geom_smooth(data = filter(d_full, MR.exponent == 0.75), aes(weight = Percent, group = Group, color = MR.exponent), method = lm) +
+#   annotation_custom(rastOo, ymin = -2, ymax = -1, xmin = 5.25, xmax = 6.5) +
+#   annotation_custom(rastBp, ymin = 6.5, ymax = 8.5, xmin = 9.5, xmax = 12.5) +
+#   annotation_custom(rastBm, ymin = -0.5, ymax = 0.5, xmin = 10.55, xmax = 12.75) +
+#   annotation_custom(rastPp, ymin = 6.5, ymax = 8, xmin = 3.15, xmax = 3.9) +
+#   annotation_custom(rastZsp, ymin = 3.5, ymax = 5, xmin = 7.25, xmax = 8.5) +
+#   annotation_custom(rastPm, ymin = -3.5, ymax = -2.25, xmin = 9.5, xmax = 11.5) +
+#   annotation_custom(rastBa, ymin = 4.5, ymax = 5.5, xmin = 8.5, xmax = 9.75) +
+#   theme_bw() + guides(size=FALSE, color=FALSE) + ylim(-4,8) + xlim(2.75,12.5) +
+#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+#   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
+# fig_3 + scale_color_npg()
+
+
 
