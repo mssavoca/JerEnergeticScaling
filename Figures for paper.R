@@ -23,15 +23,32 @@ d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
                                    ifelse(d_full$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
                                           "Balaenidae")))
   
-d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")
+  
+d_full_3.18.19 <- read.csv("Cetacea model output BOUT_EXTANT_final_3.18.19.csv")
+  d_full_3.18.19$MR.exponent = as.factor(d_full_3.18.19$MR.exponent)
+  d_full_3.18.19$Group <- ifelse(d_full_3.18.19$Family == "Balaenopteridae", "Rorqual", 
+                       ifelse(d_full_3.18.19$Family == "Balaenidae", "Balaenid", "Odontocete"))
+  d_full_3.18.19$Grouping <- ifelse(d_full_3.18.19$Family == "Balaenopteridae", "Balaenopteridae", 
+                          ifelse(d_full_3.18.19$Family %in% c("Delphinidae", "Phocoenidae"), "Delphinidae and Phocoenidae",
+                                 ifelse(d_full_3.18.19$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
+                                        "Balaenidae")))
+  
+d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")  # EARLY 2019 file, d_full_3.18.19 is newer
   d_full_final <- subset(d_full_final, select = c(Family:MR.exponent))
   d_full_final$MR.exponent = as.factor(d_full_final$MR.exponent)
+  d_full_final$Percent = as.numeric(d_full_final$Percent)
   d_full_final$M..kg. <- as.numeric(d_full_final$M..kg.)
   d_full_final$Prey.W..g. <- as.numeric(d_full_final$Prey.W..g.)
+  d_full_final$TL..m. <- as.numeric(d_full_final$TL..m.)
+  d_full_final$Energy..kJ.g. <- as.numeric(d_full_final$Energy..kJ.g.)
+  d_full_final$Energy..kJ. <- as.numeric(d_full_final$Energy..kJ.)
+  d_full_final$E_divesurf_med <- as.numeric(d_full_final$E_divesurf_med)
+  d_full_final$E_divesurf_max <- as.numeric(d_full_final$E_divesurf_max)
   d_full_final$Group = as.factor(d_full_final$Group <- ifelse(d_full_final$Family == "Balaenopteridae", "Rorqual", 
                          ifelse(d_full_final$Family == "Balaenidae", "Balaenid", 
                                 ifelse(d_full_final$Family == "Fossil", "Fossil", 
                                        ifelse(d_full_final$Family == "Hypothetical", "Hypothetical", "Odontocete")))))
+  
   
 
 d_ind <- read.csv("Stats by individual.csv")
@@ -94,11 +111,36 @@ ggsave("fig2a_withoutlegend.eps", width = 13, height = 8, units = "in")
 #dev.copy2pdf(file="fig2a_withlegend.pdf", width=13, height=8)
 
 
-# ("text", x = 2:3, y = 20:21, label = c("my label", "label 2"))
-# 
-# y = 0.2204x1.2438 R² = 0.3387
 
-  
+fig_2_final <- ggplot(d_ind, aes(DT_med..min., FE_med, color = Group, shape = Species)) + # Change shape from Group to Grouping for different plot types
+  geom_point(aes(group = Group, size = MXD..m.)) + 
+  geom_smooth(aes(group = Group), method = lm, se = TRUE, size=1.25) +       # Change group from Group to Grouping for different plot types
+  #  geom_smooth(data = d_ind, aes(x = DT_max.TADL, y = FE_max), color = "black",  method = lm, size=0.5, inherit.aes = FALSE) +
+  scale_shape_manual(name = "Species",                      
+                     labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
+                                "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
+                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
+                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
+  theme_bw() + 
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  # annotation_custom(rastfm, ymin = -50, ymax = -34, xmin = 15, xmax = 32) +
+  # annotation_custom(rastBp, ymin = 16.5, ymax = 24.5, xmin = -24, xmax = -2) +
+  # annotation_custom(rastPp, ymin = 1, ymax = 7, xmin = -3.5, xmax = 2.5) +
+  # annotation_custom(rastZsp, ymin = 25, ymax = 29, xmin = 43, xmax = 55) +
+  # annotation_custom(rastPm, ymin = 30, ymax = 35.5, xmin = 12, xmax = 31) +
+  # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
+  labs(x = "Median dive duration", y = "Median # feeding events per dive", size = "Max. depth (m)") + 
+  scale_x_continuous(breaks=seq(-25,50,25))
+fig_2_final +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
+
+ggsave("fig_2_final.tiff", width = 13, height = 8, units = "in")
+dev.copy2pdf(file="fig_2_final.pdf", width=13, height=8)
+
+
+
+m_fig_2_final = lm(data =filter(d_ind, Group == "Rorquals"), FE_med~DT_med..min.)
+summary(m_fig_2_final)
+
   
 ############
 # Figure 2B
@@ -132,6 +174,7 @@ fig_2b_final + scale_color_npg()  + theme(legend.position="none")
 ggsave("fig2b_final.eps", width = 13, height = 8, units = "in")
 #Save pdf of plot
 #dev.copy2pdf(file="fig2b_final.pdf", width=13, height=8)
+
 
 
 ############
@@ -169,7 +212,7 @@ ggsave("fig2c.eps", width = 13, height = 8, units = "in")
 # Figure 3
 ##########
 
-fig_3a <- ggplot(data = filter(d_full_final, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
+fig_3a <- ggplot(data = filter(d_full_3.18.19, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
   geom_point(aes(size = (Percent)*10), alpha = 0.5) +  
   geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent), method = lm) +
   geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
@@ -185,22 +228,53 @@ fig_3a <- ggplot(data = filter(d_full_final, Family != "Balaenidae"), aes(x = lo
   ylim(1,7) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Prey Energy (kJ)]")
+cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
 fig_3a + scale_color_manual(values = cols)
 
 # Save plots
 ggsave("fig3a.tiff", width = 14, height = 8, units = "in")
 
-#dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
+dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
-#m1 = lm(data =filter(d_full_final, Group == "Odontocete"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
+m_fig_3a = lm(data =filter(d_full_3.18.19, Group == "Rorqual"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
+summary(m_fig_3a)
+
+
+#######################
+# Density plot of diet 
+#######################
+
+d_full_3.18.19$Grouping <- as.factor(fct_relevel(d_full_3.18.19$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
+fig3b <- d_full_3.18.19 %>% filter(Grouping != "Balaenidae") %>% 
+  ggplot(aes(x = Energy..kJ., y=..scaled.., fill = paste(Genus, Species))) + 
+  geom_density(aes(weight = Percent), alpha = 0.4) + 
+  scale_x_log10(labels = scales::comma) + 
+  # scale_x_continuous(labels = scales::comma) +
+  facet_wrap(~ Grouping) + 
+  xlab("log[Prey energy (kJ)]") + ylab("frequency") +
+  theme_classic() + labs(fill="Species") +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16,face="bold"),
+        plot.title = element_text(hjust = 0.5, size = 16), 
+        strip.text.x = element_text(size = 14)) 
+fig3b
+
+# Save plots
+ggsave("fig3b.tiff", width = 14, height = 8, units = "in")
+#dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
+
+
+##########
+# Figure 4
+##########
 
 d_other <- filter(d_full_final, Group %in% c("Hypothetical", "Balaenid", "Fossil"))
 
-fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
+fig_4 <- ggplot(data = d_full_3.18.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
   #geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
   geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
-  geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
-  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_3.18.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_3.18.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
   # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
   # annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
@@ -213,15 +287,18 @@ fig_3b <- ggplot(data = d_full_final, aes(x = log10(M..kg.), y = log10(E_divesur
   # annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
   # annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(-2,4) + xlim(1,6) +
+  #ylim(-2,4) + xlim(1,6) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
-fig_3b + scale_color_manual(values = cols) + theme(legend.position="none")
+fig_4 + scale_color_manual(values = cols) + theme(legend.position="none")
 
 # Save plots
 ggsave("fig3b_nopoints.tiff", width = 14, height = 8, units = "in")
 #dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
+
+
+
 
 fig_3b_extended <- ggplot(data = filter(d_full_final, !Group %in% c("Odontocete", "Balaenid")), 
                           aes(x = log10(M..kg.), y = log10(E_divesurf_max), color = Group)) +
@@ -264,28 +341,7 @@ d_full_final %>% filter(MR.exponent == "0.75") %>%  group_by(Genus, Species) %>%
 # fig_3 + scale_color_npg()
 
 
-#######################
-# Density plot of diet 
-#######################
 
-d_full$Grouping <- as.factor(fct_relevel(d_full$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
-fig4 <- d_full %>% filter(Grouping != "Balaenidae") %>% 
-  ggplot(aes(Energy..kJ., fill = paste(Genus, Species))) + 
-  geom_density(aes(weight = Percent), alpha = 0.4) + 
-  scale_x_log10(labels = scales::comma) + 
- # scale_x_continuous(labels = scales::comma) +
-  facet_wrap(~ Grouping) + 
-  xlab("log[Prey energy (kJ)]") + ylab("frequency") +
-  theme_classic() + labs(fill="Species") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=16,face="bold"),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        strip.text.x = element_text(size = 14)) 
-fig4
-
-# Save plots
-ggsave("fig4.tiff", width = 14, height = 8, units = "in")
-#dev.copy2pdf(file="fig4.pdf", width=14, height=8)
 
 
 
