@@ -213,19 +213,6 @@ ggsave("fig2c.eps", width = 13, height = 8, units = "in")
 ##########
 # Figure 3
 ##########
-
-d_full_3.18.19 %>% 
-  filter(Family != "Balaenidae") %>% 
-  uncount(weights = Percent) %>% 
-  ggplot(aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
-  geom_violin(aes(group = M..kg.),
-              width = 1,
-              position = position_dodge2(preserve = "total")) +
-  geom_smooth(aes(weight = Percent, color = Group),
-              d_full_final, 
-              method = lm,
-              se = FALSE) +
-  theme_bw()
 fig_3a <- ggplot(data = filter(d_full_3.18.19, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
   geom_point(aes(size = Percent), alpha = 0.5) +  
   #geom_boxplot(aes(group = M..kg.), width = 0.2) +
