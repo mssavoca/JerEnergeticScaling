@@ -213,28 +213,36 @@ ggsave("fig2c.eps", width = 13, height = 8, units = "in")
 ##########
 # Figure 3
 ##########
-
 fig_3a <- ggplot(data = filter(d_full_3.18.19, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
-  geom_point(aes(size = (Percent)*10), alpha = 0.5) +  
-  geom_smooth(data = filter(d_full_final, Group == "Odontocete"), aes(weight = Percent), method = lm) +
-  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
+  geom_point(aes(size = Percent), alpha = 0.5) +  
+  #geom_boxplot(aes(group = M..kg.), width = 0.2) +
+  #geom_violin(aes(group = M..kg.), width = 0.4, alpha = 0) +
+  geom_smooth(aes(weight = Percent, color = Group),
+              d_full_final, 
+              method = lm,
+              se = FALSE) +
+  #geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
   geom_abline(intercept = 0, slope = 1, linetype ="dashed", size = 1.15) + 
-  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  # annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
-  # annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
-  # annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
-  # annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
-  # annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
-  # annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
-  theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(1,7) + xlim(1,6) +
-  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
+  annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
+  annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
+  annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
+  annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
+  annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
+  theme_bw() + 
+  guides(size = FALSE, color = FALSE) + 
+  ylim(1,7) + 
+  xlim(1,6) +
+  scale_radius(range = c(0.5, 8)) +
+  scale_color_manual(values = c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")) +
+  theme(axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16, face = "bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Prey Energy (kJ)]")
-cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
-fig_3a + scale_color_manual(values = cols)
+fig_3a
 
 # Save plots
-ggsave("fig3a.tiff", width = 14, height = 8, units = "in")
+ggsave("fig3a_options/fig3a_points.pdf", width = 14, height = 8, units = "in")
 
 dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
@@ -247,22 +255,59 @@ summary(m_fig_3a)
 #################################
 
 d_full_3.18.19$Grouping <- as.factor(fct_relevel(d_full_3.18.19$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
-fig3b <- d_full_3.18.19 %>% filter(Grouping != "Balaenidae") %>% 
-  ggplot(aes(x = Energy..kJ., fill = paste(Genus, Species))) + 
-  geom_density(aes(weight = Percent), alpha = 0.4) + 
-  scale_x_log10(labels = scales::comma) + 
-  # scale_x_continuous(labels = scales::comma) +
-  facet_wrap(~ Grouping) + 
-  xlab("log[Prey energy (kJ)]") + ylab("frequency") +
-  theme_classic() + labs(fill="Species") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=16,face="bold"),
-        plot.title = element_text(hjust = 0.5, size = 16), 
-        strip.text.x = element_text(size = 14)) 
+
+order_binom <- function(g, s, m) {
+  sprintf("%s. %s", str_sub(g, 1, 1), s) %>% 
+  factor %>% 
+    fct_reorder(m)
+}
+
+# boxplot/violin
+fig3b <- d_full_3.18.19 %>%
+  filter(Grouping != "Balaenidae") %>% 
+  mutate(Species = recode(Species,
+                          bonarensis = "bonaerensis",
+                          Phocaena = "phocoena"),
+         binomial = order_binom(Genus, Species, M..kg.)) %>%
+  uncount(Percent) %>%
+  ggplot(aes(x = binomial, y = log10(Energy..kJ.), color = Grouping)) +
+  #geom_boxplot() +
+  geom_violin(width = 1.5,
+              adjust = 2) +
+  scale_y_continuous(labels = scales::comma) + 
+  labs(y = "log[Prey energy (kJ)]") +
+  #coord_flip() +
+  #ylab("frequency") +
+  theme_classic(base_size = 18) +
+  theme(axis.title = element_text(face = "bold"),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank(),
+        legend.position = c(0.2, 0.8)) 
+fig3b
+
+# histogram
+fig3b <- d_full_3.18.19 %>%
+  filter(Grouping != "Balaenidae") %>% 
+  mutate(Species = recode(Species,
+                          bonarensis = "bonaerensis",
+                          Phocaena = "phocoena"),
+         binomial = order_binom(Genus, Species, M..kg.)) %>%
+  uncount(Percent) %>%
+  ggplot(aes(log10(Energy..kJ.), color = binomial, fill = binomial)) +
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position = position_identity()) +
+  scale_x_continuous(labels = scales::comma) + 
+  labs(x = "log[Prey energy (kJ)]",
+       y = "count") +
+  facet_wrap(~ Grouping) +
+  theme_classic(base_size = 18) +
+  theme(axis.title = element_text(face = "bold"),
+        legend.title = element_blank(),
+        legend.position = c(0.7, 0.7)) 
 fig3b
 
 # Save plots
-ggsave("fig3b.tiff", width = 14, height = 8, units = "in")
+ggsave("fig3b_options/fig3b_violin.pdf", width = 14, height = 8, units = "in")
 #dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
 
 
