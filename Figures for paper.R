@@ -125,10 +125,11 @@ fig_2_final <- d_ind %>%
   geom_smooth(method = lm, 
               se = TRUE, 
               size = 1.25) +       # Change group from Group to Grouping for different plot types
-  scale_shape_manual(values = c(0:14)) +
+  scale_shape_manual(values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
   scale_radius(range = c(0.5, 8)) +
   scale_x_continuous(breaks=seq(-25,50,25)) +
-  scale_color_manual(values = c("#4DBBD5FF","#E64B35FF")) + 
+  scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"), 
+                     guide = FALSE) + 
   theme_bw() + 
   theme(axis.text = element_text(size = 14), 
         axis.title = element_text(size = 16, face="bold"),

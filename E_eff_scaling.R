@@ -33,6 +33,8 @@ energy_eff_lm <- d_full %>%
   mutate(a = 10 ^ intercept,
          b = slope)
 
+write_csv(energy_eff_lm, path = "Figure 4 regession values.csv")
+
 # Plot to verify allometric equations fit the original points
 # All combinations of group and MR exponent
 crossing(Group = unique(d_full$Group),
