@@ -121,10 +121,13 @@ fig_2_final <- ggplot(d_ind, aes(DT_med..min., FE_med, color = Group, shape = Sp
   scale_shape_manual(name = "Species",                      
                      labels = c("Balaenoptera bonaerensis","Balaenoptera musculus","Balaenoptera physalus","Berardius bairdii",
                                 "Globicephala macrorhynchus", "Globicephala melas","Grampus griseus", "Megaptera novaeangliae",
-                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),                     
-                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
+                                "Mesoplodon densirostris","Orcinus orca","Phocoena phocoena", "Physeter macrocephalus", "Ziphius cavirostris"),
+                     values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14),
+                     face = "italic") +
   theme_bw() + 
-  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold"),
+        legend.text=element_text(size=14),
+        legend.title=element_text(size=14)) +
   # annotation_custom(rastfm, ymin = -50, ymax = -34, xmin = 15, xmax = 32) +
   # annotation_custom(rastBp, ymin = 16.5, ymax = 24.5, xmin = -24, xmax = -2) +
   # annotation_custom(rastPp, ymin = 1, ymax = 7, xmin = -3.5, xmax = 2.5) +
@@ -132,8 +135,9 @@ fig_2_final <- ggplot(d_ind, aes(DT_med..min., FE_med, color = Group, shape = Sp
   # annotation_custom(rastPm, ymin = 30, ymax = 35.5, xmin = 12, xmax = 31) +
   # annotate("text", x = 10, y = 20, label = expression("y=0.2204x^1.2438")) + #c("y == 0.2204x ^ 1.2438", "italic(R) ^ 2 == 0.3387")) +
   labs(x = "Median dive duration", y = "Median # feeding events per dive", size = "Max. depth (m)") + 
-  scale_x_continuous(breaks=seq(-25,50,25))
-fig_2_final +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"))
+  scale_radius(range = c(0.5, 8)) +
+  scale_x_continuous(breaks=seq(-25,50,25)) 
+fig_2_final +scale_color_manual(values = c("#4DBBD5FF","#E64B35FF"), guide=FALSE) + guides(shape = guide_legend(override.aes = list(size=3)))
 
 ggsave("fig_2_final.tiff", width = 13, height = 8, units = "in")
 dev.copy2pdf(file="fig_2_final.pdf", width=13, height=8)
@@ -264,7 +268,8 @@ order_binom <- function(g, s, m) {
 
 # boxplot/violin
 fig3b <- d_full_3.18.19 %>%
-  filter(Grouping != "Balaenidae") %>% 
+  filter(Grouping != "Balaenidae", 
+         MR.exponent == "0.75") %>% 
   mutate(Species = recode(Species,
                           bonarensis = "bonaerensis",
                           Phocaena = "phocoena"),
@@ -334,7 +339,7 @@ fig_4 <- ggplot(data = d_full_3.18.19, aes(x = log10(M..kg.), y = log10(E_divesu
   # annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
   # annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
   theme_bw() + guides(size=FALSE, color=FALSE) + 
-  ylim(-2,4) + xlim(1,6) +
+  ylim(-2,5) + xlim(1,7) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency]")
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
