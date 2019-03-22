@@ -366,9 +366,33 @@ fig_3b_extended + scale_color_manual(values = cols) + theme(legend.position="non
 ggsave("fig3b_extended.tiff", width = 14, height = 8, units = "in")
 #dev.copy2pdf(file="fig3b.pdf", width=14, height=8)
 
-
-
-
+####################
+# Med-med regression
+####################
+med_med_lm <- lm(formula = log10(FE_med) ~ log10(DT_med..min.), data = d_ind)
+med_med_slope <- signif(coef(med_med_lm)[2], 3)
+med_med_int <- signif(coef(med_med_lm)[1], 3)
+med_med_r2 <- signif(summary(med_med_lm)$r.squared, 3)
+med_med_form_lbl <- str_glue("log[10](FE_med) == {med_med_slope} %*%",
+                             " log[10](DT_med) + {med_med_int}")
+med_med_r2_lbl <- str_glue("R^2 == {med_med_r2}")
+ggplot(d_ind, aes(log10(DT_med..min.), log10(FE_med))) +
+  geom_point(size = 1) +
+  geom_smooth(method = "lm", se = FALSE) +
+  annotate(geom = "text", 
+           label = med_med_form_lbl,
+           x = -0.5, y = 1.5,
+           hjust = 0,
+           parse = TRUE) +
+  annotate(geom = "text", 
+           label = med_med_r2_lbl,
+           x = -0.5, y = 1.35,
+           hjust = 0,
+           parse = TRUE) +
+  labs(x = expression(log[10](DT_med)),
+       y = expression(log[10](FE_med))) +
+  theme_classic(base_size = 14)
+ggsave("med_med_reg.eps", width = 14, height = 8, units = "in")
 
 ###########################
 # older figures drafts here
