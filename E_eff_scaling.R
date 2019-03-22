@@ -18,14 +18,18 @@ d_full <- read_csv("Cetacea model output BOUT_EXTANT_final_3.18.19.csv") %>%
 
 energy_eff_lm <- d_full %>% 
   group_by(Group, `MR exponent`) %>% 
-  group_map(~ lm(log10(E_divesurf_med) ~ log10(`M (kg)`), 
-                 .x) %>% 
-              broom::tidy()) %>% 
+  group_map(function(group, ...) {
+    mod <- lm(log10(E_divesurf_med) ~ log10(`M (kg)`), group, weights = Percent)
+    mod_summ <- summary(mod)
+    fstat <- mod_summ$fstatistic
+    p.value <- pf(fstat[1], fstat[2], fstat[3], lower.tail=FALSE) 
+    r.squared <- mod_summ$r.squared
+    tibble(intercept = coef(mod)[1],
+           slope = coef(mod)[2],
+           p.value,
+           r.squared)
+  }) %>% 
   ungroup %>% 
-  select(Group, `MR exponent`, term, estimate) %>% 
-  spread(term, estimate) %>% 
-  rename(intercept = "(Intercept)",
-         slope = "log10(`M (kg)`)") %>% 
   mutate(a = 10 ^ intercept,
          b = slope)
 
