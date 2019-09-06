@@ -8,6 +8,7 @@ library(ggplot2)
 library(ggsci)
 library(readxl)
 library(tidyverse)
+library(ggpubr)
 
 ###########
 # load data
@@ -26,20 +27,20 @@ d_full <- read.csv("Cetacea model output BOUT_EXTANT.csv")
                                           "Balaenidae")))
   
   
-d_full_3.18.19 <- read.csv("Cetacea model output BOUT_EXTANT_final_3.18.19.csv")
-  d_full_3.18.19$MR.exponent = as.factor(d_full_3.18.19$MR.exponent)
-  d_full_3.18.19$Group <- ifelse(d_full_3.18.19$Family == "Balaenopteridae", "Rorqual", 
-                       ifelse(d_full_3.18.19$Family == "Balaenidae", "Balaenid", "Odontocete"))
-  d_full_3.18.19$Grouping <- ifelse(d_full_3.18.19$Family == "Balaenopteridae", "Balaenopteridae", 
-                          ifelse(d_full_3.18.19$Family %in% c("Delphinidae", "Phocoenidae"), "Delphinidae and Phocoenidae",
-                                 ifelse(d_full_3.18.19$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
+d_full_9.5.19 <- read.csv("Cetacea model output v15.2 to savoca.csv")
+  d_full_9.5.19$MR.exponent = as.factor(d_full_9.5.19$MR.exponent)
+  d_full_9.5.19$Group <- ifelse(d_full_9.5.19$Family == "Balaenopteridae", "Rorqual", 
+                       ifelse(d_full_9.5.19$Family == "Balaenidae", "Balaenid", "Odontocete"))
+  d_full_9.5.19$Grouping <- ifelse(d_full_9.5.19$Family == "Balaenopteridae", "Balaenopteridae", 
+                          ifelse(d_full_9.5.19$Family %in% c("Delphinidae", "Phocoenidae"), "Delphinidae and Phocoenidae",
+                                 ifelse(d_full_9.5.19$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
                                         "Balaenidae")))
   
-d_full_final <- read.csv("Cetacea model output BOUT_EXTANT_w_hypotheticals.csv")    # EARLY 2019 file, d_full_3.18.19 is newer
+d_full_final <- read.csv("Cetacea model output v15.2 to savoca.csv")   # Jeremy game me this file during the revisions stage on 9.5.19
   d_full_final <- subset(d_full_final, select = c(Family:MR.exponent))
   d_full_final$MR.exponent = as.factor(d_full_final$MR.exponent)
   d_full_final$Percent = as.numeric(d_full_final$Percent)
-  d_full_final$M..kg. <- as.numeric(d_full_final$M..kg.)
+ # d_full_final$M..kg. <- as.numeric(d_full_final$M..kg.)
   d_full_final$Prey.W..g. <- as.numeric(d_full_final$Prey.W..g.)
   d_full_final$TL..m. <- as.numeric(d_full_final$TL..m.)
   d_full_final$Energy..kJ.g. <- as.numeric(d_full_final$Energy..kJ.g.)
@@ -220,27 +221,26 @@ ggsave("fig2c.eps", width = 13, height = 8, units = "in")
 ##########
 # Figure 3
 ##########
-fig_3a <- ggplot(data = filter(d_full_3.18.19, Family != "Balaenidae"), aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
+fig_3a <- ggplot(data = filter(d_full_9.5.19, Family != "Balaenidae"), 
+                 aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
   geom_point(aes(size = Percent), alpha = 0.5) +  
-  #geom_boxplot(aes(group = M..kg.), width = 0.2) +
-  #geom_violin(aes(group = M..kg.), width = 0.4, alpha = 0) +
   geom_smooth(aes(weight = Percent, color = Group),
               d_full_final, 
               method = lm,
-              se = FALSE) +
+              se = TRUE) +
   #geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
   geom_abline(intercept = 0, slope = 1, linetype ="dashed", size = 1.15) + 
-  annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
-  annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
-  annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
-  annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
-  annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
-  annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
-  annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
+  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  # annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
+  # annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
+  # annotation_custom(rastPp, xmin = 1.35, xmax = 1.75, ymin = 3.5, ymax = 4) +
+  # annotation_custom(rastZsp, xmin = 3.5, xmax = 4.5, ymin = 0.75, ymax = 1.5) +
+  # annotation_custom(rastPm, xmin = 4.45, xmax = 5.95, ymin = 2, ymax = 3.75) +
+  # annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
   theme_bw() + 
   guides(size = FALSE, color = FALSE) + 
-  ylim(1,7) + 
-  xlim(1,6) +
+  #ylim(1,7) + 
+  #xlim(1,6) +
   scale_radius(range = c(0.5, 8)) +
   scale_color_manual(values = c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")) +
   theme(axis.text = element_text(size = 14), 
@@ -253,7 +253,7 @@ ggsave("fig3a_options/fig3a_points.pdf", width = 14, height = 8, units = "in")
 
 dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
-m_fig_3a = lm(data =filter(d_full_3.18.19, Group == "Rorqual"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
+m_fig_3a = lm(data =filter(d_full_9.5.19, Group == "Rorqual"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 summary(m_fig_3a)
 
 
@@ -261,7 +261,7 @@ summary(m_fig_3a)
 # Density plot of diet, Figure 3B 
 #################################
 
-d_full_3.18.19$Grouping <- as.factor(fct_relevel(d_full_3.18.19$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
+d_full_9.5.19$Grouping <- as.factor(fct_relevel(d_full_9.5.19$Grouping, "Delphinidae and Phocoenidae", "Physeteridae and Ziphiidae", "Balaenopteridae"))
 
 order_binom <- function(g, s, m) {
   sprintf("%s. %s", str_sub(g, 1, 1), s) %>% 
@@ -270,7 +270,7 @@ order_binom <- function(g, s, m) {
 }
 
 # boxplot/violin
-fig3b <- d_full_3.18.19 %>%
+fig3b <- d_full_9.5.19 %>%
   filter(Grouping != "Balaenidae", 
          MR.exponent == "0.75") %>% 
   mutate(Species = recode(Species,
@@ -295,7 +295,7 @@ fig3b <- d_full_3.18.19 %>%
 fig3b
 
 # histogram
-fig3b <- d_full_3.18.19 %>%
+fig3b <- d_full_9.5.19 %>%
   filter(Grouping != "Balaenidae") %>% 
   mutate(Species = recode(Species,
                           bonarensis = "bonaerensis",
@@ -320,16 +320,16 @@ ggsave("fig3b_options/fig3b_violin.pdf", width = 14, height = 8, units = "in")
 
 
 ##########
-# Figure 4
+# Figure 4----
 ##########
 
 d_other <- filter(d_full_final, Group == "Balaenid")
 
-fig_4 <- ggplot(data = d_full_3.18.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
+fig_4 <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
   geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
-  geom_smooth(data = filter(d_full_3.18.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
-  geom_smooth(data = filter(d_full_3.18.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
   # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
   # annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
@@ -352,15 +352,109 @@ fig_4 + scale_color_manual(values = cols) + theme(legend.position="none")
 ggsave("fig4.tiff", width = 14, height = 8, units = "in")
 dev.copy2pdf(file="fig4.pdf", width=14, height=8)
 
+####################
+# Figure 4 extended----
+####################
+
+cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
+
+# fig_4_Ein <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000), color = Group)) +
+#   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
+#   geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+#   geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+#   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
+#   theme_bw() + guides(size=FALSE, color=FALSE) + 
+#   #ylim(-2,5) + xlim(1,7) +
+#   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+#   labs(x = "log[Mass (kg)]", y = "log[Total Energy In]") +
+#   scale_color_manual(values = cols) + theme(legend.position="none")
+# fig_4_Ein
+
+fig_4_E_extended <- ggplot(data = d_full_9.5.19, aes(color = Group)) +
+  geom_point(data = filter(d_full_9.5.19, Group == "Odontocete"),
+             aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000), 
+             size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) + 
+  geom_point(data = filter(d_full_9.5.19, Group == "Odontocete"),
+             aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000), 
+             size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) + 
+  geom_point(data = filter(d_full_9.5.19, Group == "Rorqual"),
+             aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000), 
+             size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) + 
+  geom_point(data = filter(d_full_9.5.19, Group == "Rorqual"),
+             aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000), 
+             size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
+  geom_point(data = filter(d_full_9.5.19, Group == "Balaenid"),
+             aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000), 
+                 size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
+  geom_point(data = filter(d_full_9.5.19, Group == "Balaenid"),
+             aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000), 
+                 size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
+
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"),
+              aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
+                  linetype = "dashed"), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"),
+              aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
+                  linetype = "solid"), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), 
+              aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
+                  linetype = "dashed"), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), 
+              aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
+                  linetype = "solid"), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Balaenid"), 
+              aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
+                  linetype = "dashed"), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Balaenid"), 
+              aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
+                  linetype = "solid"), method = lm) +
+  facet_grid(.~MR.exponent) +
+  theme_bw() + 
+  guides(size=FALSE, color=FALSE) + 
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  labs(x = "log[Mass (kg)]", y = "log[Total Energy (kJ)]") +
+  scale_color_manual(values = cols) + 
+  theme(legend.position="none",
+        strip.text = element_text(size = 12))
+fig_4_E_extended
+
+
+ # Save plots STILL NEED TO UPDATE
+ggsave("fig_4_extended.tiff", width = 14, height = 8, units = "in")
+dev.copy2pdf(file="fig_4_extended.pdf", width=14, height=8)
+
+
+fig_4_Eout <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000), color = Group)) +
+  geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
+  theme_bw() + guides(size=FALSE, color=FALSE) + 
+  #ylim(-2,5) + xlim(1,7) +
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  labs(x = "log[Mass (kg)]", y = "log[Total Energy Out]") +
+  scale_color_manual(values = cols) + theme(legend.position="none")
+fig_4_Eout + scale_color_manual(values = cols) + theme(legend.position="none")
+
+# Save plots STILL NEED TO UPDATE
+ggsave("fig4.tiff", width = 14, height = 8, units = "in")
+dev.copy2pdf(file="fig4.pdf", width=14, height=8)
+
+
+ggarrange(fig_4_Ein, fig_4_Eout, 
+          labels = c("A", "B"), # THIS IS SO COOL!!
+          legend = "none",
+          ncol = 2, nrow = 1)
+
 
 ####################
-# Extended Figure 3b
+# Extended Figure 3b----
 ####################
 
 fig_3b_extended <- ggplot(data = filter(d_full_final, !Group %in% c("Odontocete", "Balaenid")), 
                           aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
   geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
-  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(group = MR.exponent, linetype = MR.exponent), method = "lm", se = FALSE) +
+  geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(group = MR.exponent, linetype = MR.exponent), se = FALSE) +
   geom_line(data = filter(d_full_final, Group == "Fossil"), aes(group = MR.exponent, linetype = MR.exponent)) +
   geom_line(data = filter(d_full_final, Group == "Hypothetical"), aes(group = MR.exponent, linetype = MR.exponent)) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
@@ -473,6 +567,8 @@ ggsave("med_med_reg.eps", width = 14, height = 8, units = "in")
 #   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
 #   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 # fig_3 + scale_color_npg()
+
+
 
 
 
