@@ -170,7 +170,7 @@ fig_3a
 # Figure 3 modeling for Jeremy's scaling paper revisions----
 ########################################################
 
-# load packages and data----
+# load packages and data
 library(dplyr)
 library(readxl)
 library(tidyverse)
@@ -188,14 +188,8 @@ d_full_9.5.19$Grouping <- ifelse(d_full_9.5.19$Family == "Balaenopteridae", "Bal
                                         ifelse(d_full_9.5.19$Family %in% c("Physeteridae", "Ziphiidae"), "Physeteridae and Ziphiidae",
                                                "Balaenidae")))
 
-# basic glmm in lme4----
-glmm_fig_3 <- lmer(log10(Energy..kJ.) ~ log10(M..kg.)*Order + (1|Species),
-                   data = filter(d_full_9.5.19, Family != "Balaenidae" & MR.exponent == "0.45"))
-summary(glmm_fig_3) #to get slope for mysticetes it is simply the log10(Mass) term, 1.65. For Odontocetes it is the log10(Mass) term PLUS the interaction term (-1.24) to give a final Odontocete slope of 0.4
-
-
-
-# MCMCglmm so that we can get a distribution of parameter estimates and thus a confidence interval of the slope---- 
+# basic glmm in lme4
+# MCMCglmm so that we can get a distribution of parameter estimates and thus a confidence interval of the slope
 MCMCglmm_fig_3 <- MCMCglmm(log10(Energy..kJ.) ~  log10(M..kg.)*Order,
                            random = ~ Species,
                            data = filter(d_full_9.5.19, Family != "Balaenidae" & MR.exponent == "0.45"), 
@@ -221,7 +215,7 @@ slope_distributions
 dev.copy2pdf(file="slope_distributions.pdf", width=4, height=5)
 
 
-# means and 95% intervals on the two slope parameter distributions----
+# means and 95% intervals on the two slope parameter distributions
 #for Odontocetes
 mean(model_param_values$`log10(M..kg.)`)
 quantile(model_param_values$`log10(M..kg.)`, probs = c(0.025, 0.975))
@@ -305,7 +299,7 @@ ggsave("fig3b_options/fig3b_violin.pdf", width = 14, height = 8, units = "in")
 
 
 ##########
-# Figure 4----
+# Figure 4
 ##########
 
 d_other <- filter(d_full_final, Group == "Balaenid")
@@ -377,22 +371,22 @@ fig_4_E_extended <- ggplot(data = d_full_9.5.19, aes(color = Group)) +
 
   geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"),
               aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
-                  linetype = "dashed"), method = lm) +
+                  linetype = "dashed"), method = lm, se = FALSE) +
   geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"),
               aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
-                  linetype = "solid"), method = lm) +
+                  linetype = "solid"), method = lm, se = FALSE) +
   geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), 
               aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
-                  linetype = "dashed"), method = lm) +
+                  linetype = "dashed"), method = lm, se = FALSE) +
   geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), 
               aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
-                  linetype = "solid"), method = lm) +
+                  linetype = "solid"), method = lm, se = FALSE) +
   geom_smooth(data = filter(d_full_9.5.19, Group == "Balaenid"), 
               aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000),
-                  linetype = "dashed"), method = lm) +
+                  linetype = "dashed"), method = lm, se = FALSE) +
   geom_smooth(data = filter(d_full_9.5.19, Group == "Balaenid"), 
               aes(x = log10(M..kg.), y = log10(Total_E_out..J./1000),
-                  linetype = "solid"), method = lm) +
+                  linetype = "solid"), method = lm, se = FALSE) +
   facet_grid(.~MR.exponent) +
   theme_bw() + 
   guides(size=FALSE, color=FALSE) + 
