@@ -66,28 +66,28 @@ fig_4_data <- read.csv("Figure 4 data.csv")
   fig_4_data$MR <- as.factor(fig_4_data$MR)
   fig_4_data$Calc.MR <- as.factor(fig_4_data$Calc.MR)
   
-# get silhouette images for figures
-  imgOo <- png::readPNG("./Orcinus-orca.png")
-  rastOo <- grid::rasterGrob(imgOo, interpolate = T)
-  imgBp <- png::readPNG("./Balaenoptera-physalus.png")
-  rastBp <- grid::rasterGrob(imgBp, interpolate = T)
-  imgBm <- png::readPNG("./Balaena-mysticetus.png")
-  rastBm <- grid::rasterGrob(imgBm, interpolate = T)
-  imgMn <- png::readPNG("./Megaptera-novaeangliae.png")
-  rastMn <- grid::rasterGrob(imgMn, interpolate = T)
-  imgfm <- png::readPNG("./fossil-mysticete.png")
-  rastfm <- grid::rasterGrob(imgfm, interpolate = T)
-  imgZsp <- png::readPNG("./Ziphius-sp.png")
-  rastZsp <- grid::rasterGrob(imgZsp, interpolate = T)
-  imgBw <- png::readPNG("./Balaenoptera-musculus.png")
-  rastBw <- grid::rasterGrob(imgBw, interpolate = T)
-  imgPm <- png::readPNG("./Physeter-macrocephalus.png")
-  rastPm <- grid::rasterGrob(imgPm, interpolate = T)
-  imgBa <- png::readPNG("./Balaenoptera-acutorostrata.png")
-  rastBa <- grid::rasterGrob(imgBa, interpolate = T)
-  imgPp <- png::readPNG("./Phocoena-phocoena.png")
-  rastPp <- grid::rasterGrob(imgPp, interpolate = T)
-  
+# # get silhouette images for figures
+#   imgOo <- png::readPNG("./Orcinus-orca.png")
+#   rastOo <- grid::rasterGrob(imgOo, interpolate = T)
+#   imgBp <- png::readPNG("./Balaenoptera-physalus.png")
+#   rastBp <- grid::rasterGrob(imgBp, interpolate = T)
+#   imgBm <- png::readPNG("./Balaena-mysticetus.png")
+#   rastBm <- grid::rasterGrob(imgBm, interpolate = T)
+#   imgMn <- png::readPNG("./Megaptera-novaeangliae.png")
+#   rastMn <- grid::rasterGrob(imgMn, interpolate = T)
+#   imgfm <- png::readPNG("./fossil-mysticete.png")
+#   rastfm <- grid::rasterGrob(imgfm, interpolate = T)
+#   imgZsp <- png::readPNG("./Ziphius-sp.png")
+#   rastZsp <- grid::rasterGrob(imgZsp, interpolate = T)
+#   imgBw <- png::readPNG("./Balaenoptera-musculus.png")
+#   rastBw <- grid::rasterGrob(imgBw, interpolate = T)
+#   imgPm <- png::readPNG("./Physeter-macrocephalus.png")
+#   rastPm <- grid::rasterGrob(imgPm, interpolate = T)
+#   imgBa <- png::readPNG("./Balaenoptera-acutorostrata.png")
+#   rastBa <- grid::rasterGrob(imgBa, interpolate = T)
+#   imgPp <- png::readPNG("./Phocoena-phocoena.png")
+#   rastPp <- grid::rasterGrob(imgPp, interpolate = T)
+#   
 
 
 
@@ -138,15 +138,45 @@ summary(m_fig_2_final)
 ##########
 # Figure 3
 ##########
-fig_3a <- ggplot(data = filter(d_full_9.5.19, Family != "Balaenidae"), 
-                 aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group)) +
-  geom_point(aes(size = Percent), alpha = 0.5) +  
-  geom_smooth(aes(weight = Percent, color = Group),
-              d_full_final, 
-              method = lm,
-              se = TRUE) +
+
+data_from_DW <- readRDS("Figure3_smydata.rds")
+data_from_DW_bootstrap <- readRDS("Figure3_bootstrap_b.rds")
+data_from_DW_OLS_param <- readRDS("Figure3_m_ols_param.rds")
+data_from_DW_preds <- readRDS("Figure3_bootstrap_preds.rds")
+
+DW_model <- as.data.frame(t(data_from_DW_preds)) %>% 
+  cbind(select(data_from_DW, x_mean, y_mean, species, Group)) %>% 
+  mutate(slope = if_else(Group == "Rorqual", 
+                         data_from_DW_OLS_param$slope.rorq,
+                         data_from_DW_OLS_param$slope.od),
+         intercept = if_else(Group == "Rorqual", 
+                             data_from_DW_OLS_param$intercept.rorq,
+                             data_from_DW_OLS_param$intercept.od),
+         y_model = x_mean * slope + intercept) %>% 
+  rename(ci_lower = `2.5%`,
+         ci_upper = `97.5%`)
+
+fig_3a <- ggplot() +
+  geom_point(data = filter(d_full_9.5.19, Family != "Balaenidae", MR.exponent == "0.45"), 
+             aes(x = log10(M..kg.), y=log10(Energy..kJ.), color = Group, size = Percent)) +  
+  # geom_smooth(aes(weight = Percent, color = Group),
+  #             d_full_final, 
+  #             method = lm,
+  #             se = TRUE) +
   #geom_smooth(data = filter(d_full_final, Group == "Rorqual"), aes(weight = Percent), method = lm) +
-  geom_abline(intercept = 0, slope = 1, linetype ="dashed", size = 1.15) + 
+  geom_abline(intercept = 0, slope = 1, linetype ="dashed") +
+  # geom_segment(data = data_from_DW_OLS_param, aes(x = 1.5, 
+  #                                                xend = 4.25, 
+  #                                                y = 1.5*slope.od + intercept.od, 
+  #                                                yend = 4.25*slope.od + intercept.od),
+  #              color = "#4DBBD5FF") +
+  geom_line(aes(x_mean, y_model, color = Group),
+            DW_model, size = 1.1,
+            inherit.aes = FALSE) +
+  geom_ribbon(aes(x_mean, ymin = ci_lower, ymax = ci_upper, group = Group),
+              DW_model,
+              alpha = 0.25,
+              inherit.aes = FALSE) +
   # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
   # annotation_custom(rastOo, xmin = 2.5, xmax = 3.25,  ymin = 1, ymax = 1.75) +
   # annotation_custom(rastBp, xmin = 4, xmax = 6, ymin = 6.15, ymax = 7.6) +
@@ -156,8 +186,8 @@ fig_3a <- ggplot(data = filter(d_full_9.5.19, Family != "Balaenidae"),
   # annotation_custom(rastBa, xmin = 3.35, xmax = 4.25, ymin = 4.5, ymax = 5.25) +
   theme_bw() + 
   guides(size = FALSE, color = FALSE) + 
-  #ylim(1,7) + 
-  #xlim(1,6) +
+  ylim(1,7) + 
+  xlim(1,6) +
   scale_radius(range = c(0.5, 8)) +
   scale_color_manual(values = c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")) +
   theme(axis.text = element_text(size = 14), 
@@ -165,8 +195,14 @@ fig_3a <- ggplot(data = filter(d_full_9.5.19, Family != "Balaenidae"),
   labs(x = "log[Mass (kg)]", y = "log[Prey Energy (kJ)]")
 fig_3a
 
+# Save plots
+ggsave("fig3a_options/fig3a_points.pdf", width = 14, height = 8, units = "in")
 
-########################################################
+ggsave("fig3.tiff", width = 14, height = 8, units = "in")
+ggsave("fig3.jpg", width = 14, height = 8, units = "in")
+dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
+
+f########################################################
 # Figure 3 modeling for Jeremy's scaling paper revisions----
 ########################################################
 
@@ -227,10 +263,6 @@ quantile(model_param_values$Rorqual_slope, probs = c(0.025, 0.975))
 
 # check out package BRMS for stan modeling in R
 
-# Save plots
-ggsave("fig3a_options/fig3a_points.pdf", width = 14, height = 8, units = "in")
-
-dev.copy2pdf(file="fig3a.pdf", width=14, height=8)
 
 m_fig_3a = lm(data =filter(d_full_9.5.19, Group == "Rorqual"), log10(Energy..kJ.)~log10(M..kg.), weights = Percent)
 summary(m_fig_3a)
@@ -302,14 +334,122 @@ ggsave("fig3b_options/fig3b_violin.pdf", width = 14, height = 8, units = "in")
 # Figure 4
 ##########
 
+#new data from Danuta's modeling
+data_from_DW_045 <- read_rds("Figure4_45_smydata.rds")
+data_from_DW_bootstrap_045 <- readRDS("Figure4_45_bootstrap_b.rds")
+data_from_DW_OLS_param_045 <- readRDS("Figure4_45_m_ols_param.rds")
+data_from_DW_preds_045 <- readRDS("Figure4_45_bootstrap_preds.rds")
+
+DW_model_045 <- as.data.frame(t(data_from_DW_preds_045)) %>% 
+  cbind(select(data_from_DW_045, x_mean, y_mean, species, Group)) %>% 
+  mutate(slope = if_else(Group == "Rorqual", 
+                         data_from_DW_OLS_param_045$slope.rorq,
+                         data_from_DW_OLS_param_045$slope.od),
+         intercept = if_else(Group == "Rorqual", 
+                             data_from_DW_OLS_param_045$intercept.rorq,
+                             data_from_DW_OLS_param_045$intercept.od),
+         y_model = x_mean * slope + intercept) %>% 
+  rename(ci_lower = `2.5%`,
+         ci_upper = `97.5%`)
+
+
+data_from_DW_061 <- read_rds("Figure4_61_smydata.rds")
+data_from_DW_bootstrap_061 <- readRDS("Figure4_61_bootstrap_b.rds")
+data_from_DW_OLS_param_061 <- readRDS("Figure4_61_m_ols_param.rds")
+data_from_DW_preds_061 <- readRDS("Figure4_61_bootstrap_preds.rds")
+
+DW_model_061 <- as.data.frame(t(data_from_DW_preds_061)) %>% 
+  cbind(select(data_from_DW_061, x_mean, y_mean, species, Group)) %>% 
+  mutate(slope = if_else(Group == "Rorqual", 
+                         data_from_DW_OLS_param_061$slope.rorq,
+                         data_from_DW_OLS_param_061$slope.od),
+         intercept = if_else(Group == "Rorqual", 
+                             data_from_DW_OLS_param_061$intercept.rorq,
+                             data_from_DW_OLS_param_061$intercept.od),
+         y_model = x_mean * slope + intercept) %>% 
+  rename(ci_lower = `2.5%`,
+         ci_upper = `97.5%`)
+
+
+data_from_DW_068 <- read_rds("Figure4_68_smydata.rds")
+data_from_DW_bootstrap_068 <- readRDS("Figure4_68_bootstrap_b.rds")
+data_from_DW_OLS_param_068 <- readRDS("Figure4_68_m_ols_param.rds")
+data_from_DW_preds_068 <- readRDS("Figure4_68_bootstrap_preds.rds")
+
+DW_model_068 <- as.data.frame(t(data_from_DW_preds_068)) %>% 
+  cbind(select(data_from_DW_068, x_mean, y_mean, species, Group)) %>% 
+  mutate(slope = if_else(Group == "Rorqual", 
+                         data_from_DW_OLS_param_068$slope.rorq,
+                         data_from_DW_OLS_param_068$slope.od),
+         intercept = if_else(Group == "Rorqual", 
+                             data_from_DW_OLS_param_068$intercept.rorq,
+                             data_from_DW_OLS_param_068$intercept.od),
+         y_model = x_mean * slope + intercept) %>% 
+  rename(ci_lower = `2.5%`,
+         ci_upper = `97.5%`)
+
+
+data_from_DW_075 <- read_rds("Figure4_75_smydata.rds")
+data_from_DW_bootstrap_075 <- readRDS("Figure4_75_bootstrap_b.rds")
+data_from_DW_OLS_param_075 <- readRDS("Figure4_75_m_ols_param.rds")
+data_from_DW_preds_075 <- readRDS("Figure4_75_bootstrap_preds.rds")
+
+DW_model_075 <- as.data.frame(t(data_from_DW_preds_075)) %>% 
+  cbind(select(data_from_DW_075, x_mean, y_mean, species, Group)) %>% 
+  mutate(slope = if_else(Group == "Rorqual", 
+                         data_from_DW_OLS_param_075$slope.rorq,
+                         data_from_DW_OLS_param_075$slope.od),
+         intercept = if_else(Group == "Rorqual", 
+                             data_from_DW_OLS_param_075$intercept.rorq,
+                             data_from_DW_OLS_param_075$intercept.od),
+         y_model = x_mean * slope + intercept) %>% 
+  rename(ci_lower = `2.5%`,
+         ci_upper = `97.5%`)
+
+
+
+
 d_other <- filter(d_full_final, Group == "Balaenid")
 
-fig_4 <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
-  geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
-  geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
-  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
-  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
-  scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
+fig_4 <- ggplot() +
+  geom_point(data = d_full_9.5.19, 
+             aes(x = log10(M..kg.), y = log10(E_divesurf_med), 
+                 size = (Percent)*10, shape = MR.exponent, color = Group),
+             alpha = 0.5) + 
+  geom_point(data = d_other, 
+             aes(x = log10(M..kg.), y = log10(E_divesurf_med), 
+                 size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
+  geom_line(aes(x_mean, y_model, color = Group),
+            DW_model_045, size = 1.1,
+            inherit.aes = FALSE) +
+  geom_ribbon(aes(x_mean, ymin = ci_lower, ymax = ci_upper, group = Group),
+              DW_model_045,
+              alpha = 0.25,
+              inherit.aes = FALSE) +
+  geom_line(aes(x_mean, y_model, color = Group),
+            DW_model_061, size = 1.1,
+            inherit.aes = FALSE,
+            linetype = "dashed") +
+  geom_ribbon(aes(x_mean, ymin = ci_lower, ymax = ci_upper, group = Group),
+              DW_model_061,
+              alpha = 0.25,
+              inherit.aes = FALSE) +
+  geom_line(aes(x_mean, y_model, color = Group),
+            DW_model_068, size = 1.1,
+            inherit.aes = FALSE,
+            linetype = "dotdash") +
+  geom_ribbon(aes(x_mean, ymin = ci_lower, ymax = ci_upper, group = Group),
+              DW_model_068,
+              alpha = 0.25,
+              inherit.aes = FALSE) +
+  geom_line(aes(x_mean, y_model, color = Group),
+            DW_model_075, size = 1.1,
+            inherit.aes = FALSE,
+            linetype = "dotted") +
+  geom_ribbon(aes(x_mean, ymin = ci_lower, ymax = ci_upper, group = Group),
+              DW_model_075,
+              alpha = 0.25,
+              inherit.aes = FALSE) +
   # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
   # annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
   # annotation_custom(rastBp, xmin = 3.9, xmax = 5.25, ymin = 2.9, ymax = 4) +
@@ -324,12 +464,16 @@ fig_4 <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(E_divesur
   ylim(-2,5) + xlim(1,7) +
   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency]")
-cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
+cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "turquoise", "Hypothetical" = "orange", "Fossil" = "red", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
 fig_4 + scale_color_manual(values = cols) + theme(legend.position="none")
+
 
 # Save plots
 ggsave("fig4.tiff", width = 14, height = 8, units = "in")
+ggsave("fig4.jpg", width = 14, height = 8, units = "in")
 dev.copy2pdf(file="fig4.pdf", width=14, height=8)
+
+
 
 ####################
 # Figure 4 extended----
@@ -474,6 +618,10 @@ ggplot(d_ind, aes(log10(DT_med..min.), log10(FE_med))) +
        y = expression(log[10](FE_med))) +
   theme_classic(base_size = 14)
 ggsave("med_med_reg.eps", width = 14, height = 8, units = "in")
+
+
+
+
 
 
 
@@ -645,6 +793,29 @@ ggsave("fig2c.eps", width = 13, height = 8, units = "in")
 #   theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
 #   labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency (max)]")
 # fig_3 + scale_color_npg()
+
+fig_4 <- ggplot(data = d_full_9.5.19, aes(x = log10(M..kg.), y = log10(E_divesurf_med), color = Group)) +
+  geom_point(aes(size = (Percent)*10, shape = MR.exponent), alpha = 0.5) + 
+  geom_point(data = d_other, aes(size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Odontocete"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  geom_smooth(data = filter(d_full_9.5.19, Group == "Rorqual"), aes(weight = Percent, group = MR.exponent, linetype = MR.exponent), method = lm) +
+  scale_linetype_manual(values=c("solid", "dashed", "dotdash", "dotted")) +
+  # annotation_custom(rastOo, ymin = -50, ymax = -45, xmin = -24, xmax = -2) + #Otherwise the ggsave has transparent first silhouette
+  # annotation_custom(rastOo, xmin = 2.65, xmax = 3.15,  ymin = -1.5, ymax = -0.6) +
+  # annotation_custom(rastBp, xmin = 3.9, xmax = 5.25, ymin = 2.9, ymax = 4) +
+  # annotation_custom(rastPp, xmin = 2.4, xmax = 2.65, ymin = 1.5, ymax = 2) +
+  # annotation_custom(rastZsp, xmin = 3.25, xmax = 3.9, ymin = -2, ymax = -0.75) +
+  # annotation_custom(rastPm, xmin = 4.25, xmax = 5.25, ymin = -2, ymax = -0.5) +
+  # annotation_custom(rastBa, xmin = 3.6, xmax = 4.1, ymin = 2.05, ymax = 2.5) +
+  # annotation_custom(rastBm, xmin = 4.6, xmax = 5.7, ymin = -0.75, ymax = 0.45) +
+  # annotation_custom(rastfm, xmin = 3.15, xmax = 3.6, ymin = 1.5, ymax = 2.1) +
+  # annotation_custom(rastBw,  xmin = 5, xmax = 6.75, ymin = 1.3, ymax = 2.5) +
+  theme_bw() + guides(size=FALSE, color=FALSE) + 
+  ylim(-2,5) + xlim(1,7) +
+  theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold")) +
+  labs(x = "log[Mass (kg)]", y = "log[Energetic Efficiency]")
+cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "tan2", "Hypothetical" = "orange", "Fossil" = "red", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
+fig_4 + scale_color_manual(values = cols) + theme(legend.position="none")
 
 
 
