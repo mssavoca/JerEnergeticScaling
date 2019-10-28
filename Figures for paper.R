@@ -12,6 +12,8 @@ library(ggpubr)
 library(lme4)
 library(lmerTest)
 library(MCMCglmm)
+library(viridis)
+
 
 
 ###########
@@ -95,20 +97,28 @@ fig_4_data <- read.csv("Figure 4 data.csv")
 ##############
 # Fig 2 Final
 ##############
+d_ind$Species <- factor(d_ind$Species, levels = c([1] "Balaenoptera_bonaerensis"   "Balaenoptera_musculus"      "Balaenoptera_physalus"     
+                                                   [4] "Berardius_bairdii"          "Globicephala_macrorhynchus" "Globicephala_melas"        
+                                                   [7] "Grampus_griseus"            "Megaptera_novaeangliae"     "Mesoplodon_densirostris"   
+                                                   [10] "Orcinus_orca"               "Phocoena_phocoena"          "Physeter_macrocephalus"    
+                                                   [13] "Ziphius_cavirostris"))
+#https://stackoverflow.com/questions/12410908/combine-legends-for-color-and-shape-into-a-single-legend
+  
+  
 fig_2_final <- d_ind %>% 
   mutate(Species = str_replace(Species, "_", " ")) %>% 
   ggplot(aes(DT_med..min., 
              FE_med, 
              #group = Group,
              shape = Species)) + # Change shape from Group to Grouping for different plot types
-  geom_point(aes(size = MXD..m., color = Grouping)) + 
+  geom_point(aes(size = MXD..m., color = Group), alpha = 0.75) + 
   # geom_smooth(method = lm, 
   #             se = TRUE, 
   #             size = 1.25) +       # Change group from Group to Grouping for different plot types
-  scale_shape_manual(values = c(0,1,2,3,4,5,6,7,8,9,10,12,13,14)) +
+  scale_shape_manual(name = "Species", labels = factor(d_ind$Species), values = c(16,16,16,15,17,17,17,16,15,17,17,18,15)) +
   scale_radius(range = c(0.5, 8)) +
   scale_x_continuous(breaks=seq(-25,50,25)) +
-  scale_color_manual(values = c("#E64B35FF","#4DBBD5FF","darkblue")) + 
+  scale_color_manual(name = "Species", labels = factor(d_ind$Species), values = c("#E64B35FF","#4DBBD5FF")) + 
   theme_bw() + 
   theme(axis.text = element_text(size = 14), 
         axis.title = element_text(size = 16, face="bold"),
