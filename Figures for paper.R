@@ -97,16 +97,16 @@ fig_4_data <- read.csv("Figure 4 data.csv")
 ##############
 # Fig 2 Final
 ##############
-d_ind$Species <- factor(d_ind$Species, levels = c([1] "Balaenoptera_bonaerensis"   "Balaenoptera_musculus"      "Balaenoptera_physalus"     
-                                                   [4] "Berardius_bairdii"          "Globicephala_macrorhynchus" "Globicephala_melas"        
-                                                   [7] "Grampus_griseus"            "Megaptera_novaeangliae"     "Mesoplodon_densirostris"   
-                                                   [10] "Orcinus_orca"               "Phocoena_phocoena"          "Physeter_macrocephalus"    
-                                                   [13] "Ziphius_cavirostris"))
+
 #https://stackoverflow.com/questions/12410908/combine-legends-for-color-and-shape-into-a-single-legend
   
   
 fig_2_final <- d_ind %>% 
-  mutate(Species = str_replace(Species, "_", " ")) %>% 
+  mutate(Species = factor(str_replace(Species, "_", " "))) %>%
+  mutate(Species = fct_relevel(Species, "Balaenoptera bonaerensis", "Megaptera novaeangliae", "Balaenoptera physalus", "Balaenoptera musculus", 
+                               "Phocoena phocoena", "Grampus griseus", "Globicephala macrorhynchus", "Globicephala melas", "Orcinus orca",       
+                               "Ziphius cavirostris", "Mesoplodon densirostris", "Berardius bairdii", 
+                               "Physeter macrocephalus")) %>% 
   ggplot(aes(DT_med..min., 
              FE_med, 
              #group = Group,
@@ -115,10 +115,18 @@ fig_2_final <- d_ind %>%
   # geom_smooth(method = lm, 
   #             se = TRUE, 
   #             size = 1.25) +       # Change group from Group to Grouping for different plot types
-  scale_shape_manual(name = "Species", labels = factor(d_ind$Species), values = c(16,16,16,15,17,17,17,16,15,17,17,18,15)) +
+  scale_shape_manual(name = "Species", labels = c("Balaenoptera bonaerensis", "Megaptera novaeangliae", "Balaenoptera physalus", "Balaenoptera musculus", 
+                                                  "Phocoena phocoena", "Grampus griseus", "Globicephala macrorhynchus", "Globicephala melas", "Orcinus orca",       
+                                                  "Ziphius cavirostris", "Mesoplodon densirostris", "Berardius bairdii", 
+                                                  "Physeter macrocephalus"), values = c(16,16,16,16,16,17,17,17,17,18,18,18,15)) +
   scale_radius(range = c(0.5, 8)) +
   scale_x_continuous(breaks=seq(-25,50,25)) +
-  scale_color_manual(name = "Species", labels = factor(d_ind$Species), values = c("#E64B35FF","#4DBBD5FF")) + 
+  scale_color_manual(name = "Species",
+                     labels = c("Balaenoptera bonaerensis", "Megaptera novaeangliae", "Balaenoptera physalus", "Balaenoptera musculus", 
+                                "Phocoena phocoena", "Grampus griseus", "Globicephala macrorhynchus", "Globicephala melas", "Orcinus orca",       
+                                "Ziphius cavirostris", "Mesoplodon densirostris", "Berardius bairdii", 
+                                "Physeter macrocephalus"),
+                     values = c("#4DBBD5FF", "#E64B35FF")) + 
   theme_bw() + 
   theme(axis.text = element_text(size = 14), 
         axis.title = element_text(size = 16, face="bold"),
