@@ -20,6 +20,10 @@ d_full$M..kg. <- as.numeric(d_full$M..kg.)
 d_full$Prey.W..g. <- as.numeric(d_full$Prey.W..g.)
 d_full$Group <- ifelse(d_full$Family == "Balaenopteridae", "Rorqual", 
                        ifelse(d_full$Family == "Balaenidae", "Balaenid", "Odontocete"))
+d_full$Grouping <- ifelse(d_full$Family == "Balaenopteridae", "Balaenopteridae", 
+                       ifelse(d_full$Family %in% c("Delphinidae", "Phocoenidae"), "Delphinidae and Phocoenidae",
+                              ifelse(d_full$Family %in% c("Physeteridae, Ziphiidae"), "Physeteridae and Ziphiidae",
+                                     "Balaenidae")))
 
 # Makes the group when fossil species are included in NULL_ALL_ENP
 #d_full$Group[d_full$Family == "Balaenopteridae" | d_full$Family == "Fossil"] <- "Rorqual"
