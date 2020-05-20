@@ -173,6 +173,8 @@ DW_model <- as.data.frame(t(data_from_DW_preds)) %>%
          y_model = x_mean * slope + intercept) %>% 
   rename(ci_lower = `2.5%`,
          ci_upper = `97.5%`)
+write_csv(DW_model, "DW_model_fig3.csv")
+
 
 fig_3a <- ggplot() +
   geom_point(data = filter(d_full_9.5.19, Family != "Balaenidae", MR.exponent == "0.45"), 
@@ -349,7 +351,7 @@ ggsave("fig3b_options/fig3b_violin.pdf", width = 14, height = 8, units = "in")
 
 
 ##########
-# Figure 4
+# Figure 4----
 ##########
 
 #new data from Danuta's modeling
@@ -369,6 +371,7 @@ DW_model_045 <- as.data.frame(t(data_from_DW_preds_045)) %>%
          y_model = x_mean * slope + intercept) %>% 
   rename(ci_lower = `2.5%`,
          ci_upper = `97.5%`)
+write_csv(DW_model_045, "DW_model_045.csv")
 
 
 data_from_DW_061 <- read_rds("Figure4_61_smydata.rds")
@@ -387,6 +390,7 @@ DW_model_061 <- as.data.frame(t(data_from_DW_preds_061)) %>%
          y_model = x_mean * slope + intercept) %>% 
   rename(ci_lower = `2.5%`,
          ci_upper = `97.5%`)
+write_csv(DW_model_061, "DW_model_061.csv")
 
 
 data_from_DW_068 <- read_rds("Figure4_68_smydata.rds")
@@ -405,6 +409,7 @@ DW_model_068 <- as.data.frame(t(data_from_DW_preds_068)) %>%
          y_model = x_mean * slope + intercept) %>% 
   rename(ci_lower = `2.5%`,
          ci_upper = `97.5%`)
+write_csv(DW_model_068, "DW_model_068.csv")
 
 
 data_from_DW_075 <- read_rds("Figure4_75_smydata.rds")
@@ -423,6 +428,7 @@ DW_model_075 <- as.data.frame(t(data_from_DW_preds_075)) %>%
          y_model = x_mean * slope + intercept) %>% 
   rename(ci_lower = `2.5%`,
          ci_upper = `97.5%`)
+write_csv(DW_model_075, "DW_model_075.csv")
 
 
 
