@@ -500,7 +500,7 @@ dev.copy2pdf(file="fig4.pdf", width=14, height=8)
 
 
 ####################
-# Figure 4 extended----
+# Figure S2   ----
 ####################
 
 cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "darkgreen", "Hypothetical" = "orange", "Fossil" = "black", "Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF")
@@ -517,7 +517,7 @@ cols <- c("Odontocete" = "#4DBBD5FF", "Rorqual" = "#E64B35FF", "Balaenid" = "dar
 #   scale_color_manual(values = cols) + theme(legend.position="none")
 # fig_4_Ein
 
-fig_4_E_extended <- ggplot(data = d_full_9.5.19, aes(color = Group)) +
+fig_S2 <- ggplot(data = d_full_9.5.19, aes(color = Group)) +
   geom_point(data = filter(d_full_9.5.19, Group == "Odontocete"),
              aes(x = log10(M..kg.), y = log10(Total_Energy_in..J./1000), 
              size = (Percent)*10, shape = MR.exponent, alpha = 0.5)) + 
@@ -563,10 +563,11 @@ fig_4_E_extended <- ggplot(data = d_full_9.5.19, aes(color = Group)) +
   scale_color_manual(values = cols) + 
   theme(legend.position="none",
         strip.text = element_text(size = 12))
-fig_4_E_extended
+fig_S2
 
 
- # Save plots STILL NEED TO UPDATE
+
+# Save plots
 ggsave("fig_4_extended.tiff", width = 14, height = 8, units = "in")
 dev.copy2pdf(file="fig_4_extended.pdf", width=14, height=8)
 
